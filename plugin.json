@@ -1,19 +1,23 @@
 {
     "pluginName": "保存为文件",
-    "description": "将剪切板中的图片保存为图片文件",
+    "description": "将剪切板中的内容保存为文件",
     "author": "Ziu",
     "preload": "preload.js",
-    "logo": "logo.jpg",
+    "logo": "logo.png",
     "platform": ["win32", "darwin", "linux"],
     "version": "0.0.1",
     "features": [
       {
         "code": "保存为文件",
-        "explain": "将剪切板中的图片保存为图片文件",
+        "explain": "保存为文件",
         "cmds": [
           {
             "type": "img",
-            "label": "保存为文件"
+            "label": "保存为图片文件"
+          },
+          {
+            "type": "over",
+            "label": "保存为文本文件"
           }
         ]
       },

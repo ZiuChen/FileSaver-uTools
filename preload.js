@@ -1,5 +1,4 @@
 const fs = require("fs");
-const path = require("path");
 
 window.exports = {
   保存为文件: {
@@ -7,26 +6,41 @@ window.exports = {
     args: {
       enter: (action) => {
         window.utools.hideMainWindow();
+        const configPath = utools.dbStorage.getItem("config-path");
+        const configSilence = utools.dbStorage.getItem("config-silence");
         let folderPath =
-          utools.dbStorage.getItem("path") === null
-            ? utools.getPath("downloads")
-            : utools.dbStorage.getItem("path");
-        let fileName = `uTools_${new Date().valueOf()}.${
-          action.payload.split("image/")[1].split(";base64,")[0]
-        }`;
-        let fullPath = `${folderPath}\\${fileName}`;
-        let base64Data = action.payload.replace(/^data:image\/\w+;base64,/, "");
-        let dataBuffer = Buffer.from(base64Data, "base64");
-        fs.writeFile(
-          fullPath,
-          dataBuffer,
-          (err) => {
-            if (err === null) {
+          configPath === null ? utools.getPath("downloads") : configPath; // conditional operator
+        let fileType
+        let fileName
+        let fullPath
+        let writeInData
+        if(action.type === "img") {
+          fileType = action.payload.split("image/")[1].split(";base64,")[0]; // get the picture type
+          fileName = `uTools_${new Date().valueOf()}.${fileType}`;
+          fullPath = `${folderPath}\\${fileName}`;
+          let base64Data = action.payload.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
+          writeInData = Buffer.from(base64Data, "base64"); // to Buffer
+        } else if (action.type === "over") {
+          fileType = "txt"
+          fileName = `uTools_${new Date().valueOf()}.${fileType}`;
+          fullPath = `${folderPath}\\${fileName}`;
+          writeInData = action.payload
+        }
+        fs.writeFile(fullPath, writeInData, (err) => {
+          if (err !== null) {
+            utools.showNotification(err);
+          } else {
+            // no error reported
+            if (configSilence === null) {
+              // first time enter
+              utools.dbStorage.setItem("config-silence", "false");
+            } else if (configSilence === "true") {
+              return;
+            } else {
               utools.shellShowItemInFolder(fullPath);
-              utools.showNotification(fileName);
-            } else utools.showNotification(err);
+            }
           }
-        );
+        });
         window.utools.outPlugin();
       },
     },
@@ -38,21 +52,23 @@ window.exports = {
         callbackSetList([
           {
             title: "设置路径",
-            description: "修改文件默认保存的位置，默认为下载路径",
-            icon: "./src/icon/folder.png", // 图标
-            type: "path",
+            description: "修改文件默认保存的位置",
+            icon: "./src/icon/folder.png",
+            type: "config-path",
           },
           {
-            title: "设置文件名",
-            description: "修改文件保存时的文件名，默认为uTools与时间戳组合",
-            icon: "./src/icon/file.png", // 图标
-            type: "filename",
+            title: "静默保存",
+            description: "保存时不弹出新窗口",
+            icon: "./src/icon/file.png",
+            type: "config-silence",
           },
         ]);
       },
       select: (action, itemData, callbackSetList) => {
+        const configPath = utools.dbStorage.getItem("config-path");
+        const configSilence = utools.dbStorage.getItem("config-silence");
         let type = itemData.type;
-        if (type === "path") {
+        if (type === "config-path") {
           window.utools.hideMainWindow();
           let newPath = utools.showOpenDialog({
             title: "设置文件保存位置",
@@ -62,15 +78,20 @@ window.exports = {
           });
           if (newPath === null) return;
           else {
-            utools.dbStorage.setItem("path", newPath);
+            utools.dbStorage.setItem("config-path", newPath);
             utools.showNotification(`已修改文件保存位置：${newPath}`);
           }
-        } else if (type === "filename") {
+        } else if (type === "config-silence") {
+          if (configSilence === null || configSilence === "false") {
+            utools.dbStorage.setItem("config-silence", "true");
+            utools.showNotification("静默模式开启");
+          } else {
+            utools.dbStorage.setItem("config-silence", "false");
+            utools.showNotification("静默模式关闭");
+          }
         }
         window.utools.outPlugin();
       },
-      // 子输入框为空时的占位符，默认为字符串"搜索"
-      // placeholder: "搜索",
     },
   },
 };
