@@ -44,6 +44,7 @@ window.exports = {
                 fs.writeFile(fullPath, writeInData, (err) => {
                     if (err !== null) {
                         utools.showNotification(err)
+                        return
                     } else {
                         // no error reported
                         if (config["config-silence"].value === true) {
