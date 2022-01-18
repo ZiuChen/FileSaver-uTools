@@ -10,7 +10,7 @@ const defaultConfig = {
     },
     "config-silence": {
         id: "config-silence",
-        value: false
+        value: {"paddingVertical":"0px","paddingHorizontal":"0px","backgroundImage":null,"backgroundImageSelection":null,"backgroundMode":"color","backgroundColor":"rgba(171, 184, 195, 1)","dropShadow":true,"dropShadowOffsetY":"50px","dropShadowBlurRadius":"68px","theme":"vscode","windowTheme":"sharp","language":"javascript","fontFamily":"IBM Plex Mono","fontSize":"18px","lineHeight":"142%","windowControls":true,"widthAdjustment":true,"lineNumbers":true,"firstLineNumber":1,"exportSize":"2x","watermark":false,"squaredImage":false,"hiddenCharacters":false,"name":"","width":680}
     }
 };
 
@@ -30,7 +30,8 @@ window.exports = {
                 let writeInData
                 if (action.type === "img") {
                     let fileType = action.payload.split("image/")[1].split(";base64,")[0] // get the picture type
-                    fullPath = `${filePath}\\${fileName}.${fileType}`
+                    // fullPath = `${filePath}\\${fileName}.${fileType}`
+                    fullPath = `${filePath}\\${fileName}.gif`
                     let base64Data = action.payload.replace(
                         /^data:image\/\w+;base64,/,
                         ""
@@ -136,7 +137,7 @@ window.exports = {
                     utools.setSubInput((obj) => {
                         config["config-filename"].value = obj.text + "_{ms_time_stamp}"
                         utools.dbStorage.setItem("config", JSON.stringify(config))
-                    }, "修改完毕后，按回车确认修改", true)
+                    }, "输入内容将实时写入设置", true)
                 } else if (type === "config-silence") {
                     window.utools.hideMainWindow()
                     if (config["config-silence"].value === false) {
