@@ -3,7 +3,7 @@ const $ = mdui.$;
 utools.onPluginReady(() => {
   console.log("插件装配完成，已准备好");
   initConfig();
-  checkConfigTableUpdate();
+  addTableLisenter();
 });
 
 function initConfig() {
@@ -19,17 +19,19 @@ function initConfig() {
   inst.handleUpdate();
 }
 
-function checkConfigTableUpdate() {
+function addTableLisenter() {
   let defaultConfig = getDefaultConfig();
   Object.getOwnPropertyNames(defaultConfig).forEach((id) => {
-    console.log(id);
     $(`.${id}`).on("change", (e) => {
-      updateConfigCallBack(e);
+      updateCallBack(e);
     });
+  });
+  $(".config-path-trigger").on("click", (e) => {
+    filePathChangeCallBack(e)
   });
 }
 
-function updateConfigCallBack(event) {
+function updateCallBack(event) {
   let config = readConfig();
   if (event.target.className.indexOf("config-path") !== -1) {
     config["config-path"].value = event.target.value;
@@ -41,4 +43,19 @@ function updateConfigCallBack(event) {
     config["config-silence"].value = event.target.checked;
   }
   updateConfig(false, config);
+}
+
+function filePathChangeCallBack(event) {
+  utools.hideMainWindow();
+  let newPath = utools.showOpenDialog({
+    title: "设置文件保存位置",
+    defaultPath: utools.getPath("downloads"),
+    buttonLabel: "选择",
+    properties: ["openDirectory", "createDirectory", "promptToCreate"],
+  });
+  if (newPath === null) return;
+  else {
+    $(".config-path").val(newPath[0])
+    $(".config-path").trigger("change")
+  }
 }
