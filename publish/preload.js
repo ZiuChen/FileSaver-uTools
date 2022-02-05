@@ -24,6 +24,10 @@ window.updateConfig = function (isInit, config) {
   else {
     utools.dbStorage.setItem("config", JSON.stringify(config));
   }
+  mdui.snackbar({
+    message: '设置已更新',
+    position: 'right-bottom',
+  });
 };
 
 window.readConfig = function () {

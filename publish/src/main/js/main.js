@@ -3,7 +3,7 @@ const $ = mdui.$;
 utools.onPluginReady(() => {
   console.log("插件装配完成，已准备好");
   initConfig();
-  addTableLisenter();
+  addLisenter();
 });
 
 function initConfig() {
@@ -19,7 +19,7 @@ function initConfig() {
   inst.handleUpdate();
 }
 
-function addTableLisenter() {
+function addLisenter() {
   let defaultConfig = getDefaultConfig();
   Object.getOwnPropertyNames(defaultConfig).forEach((id) => {
     $(`.${id}`).on("change", (e) => {
@@ -27,7 +27,7 @@ function addTableLisenter() {
     });
   });
   $(".config-path-trigger").on("click", (e) => {
-    filePathChangeCallBack(e)
+    filePathChangeCallBack(e);
   });
 }
 
@@ -55,7 +55,7 @@ function filePathChangeCallBack(event) {
   });
   if (newPath === null) return;
   else {
-    $(".config-path").val(newPath[0])
-    $(".config-path").trigger("change")
+    $(".config-path").val(newPath[0]);
+    $(".config-path").trigger("change");
   }
 }
