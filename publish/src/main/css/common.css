@@ -1,0 +1,37 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, sans-serif;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0px 15px 0px 15px;
+  cursor: default;
+}
+
+.operation {
+  margin: 0px 25px 0px 40px;
+  justify-content: space-between;
+}
+
+.title > h5 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.mdui-textfield {
+  flex-grow: 0.4;
+  padding: unset;
+}
+
+button .mdui-icon {
+  zoom: 85%;
+}
+
+.logo {
+  margin-left: 60px;
+  zoom: 18%;
+  border: solid 10px white;
+  border-radius: 450px;
+}

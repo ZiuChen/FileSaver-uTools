@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>FileSaver</title>
+  <link rel="stylesheet" href="./src/main/css/mdui.min.css">
+  <link rel="stylesheet" href="./src/main/css/common.css">
+</head>
+
+<body class="mdui-theme-primary-indigo mdui-theme-accent-indigo mdui-text-color-indigo mdui-color-grey-200">
+  <div class="mdui-toolbar mdui-color-theme">
+    <img class="logo" src="./src/icon/logo.png" alt="logo">
+    <span class="mdui-typo-title">修改设置</span>
+    <div class="mdui-toolbar-spacer"></div>
+    <a href="javascript:;" class="mdui-btn mdui-btn-icon" title="view Source Code">
+      <i class="mdui-icon material-icons">link</i>
+    </a>
+  </div>
+  <div class="mdui-container-fluid">
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>文件路径</h5>
+      </div>
+    </div>
+    <div class="row operation">
+      <div class="mdui-textfield">
+        <input class="mdui-textfield-input config-path" type="text" />
+      </div>
+      <button class="mdui-btn mdui-color-theme-accent mdui-ripple">修改路径</button>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>自定义文件名</h5>
+      </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '支持生成语法', position: 'right'}">
+        <i class="mdui-icon material-icons">info</i>
+      </button>
+    </div>
+    <div class="row operation">
+      <div class="mdui-textfield">
+        <input class="mdui-textfield-input config-filename" type="text" />
+      </div>
+      <button class="mdui-btn mdui-color-theme-accent mdui-ripple">保存</button>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>图片文件格式</h5>
+      </div>
+    </div>
+    <div class="row operation">
+      <select class="mdui-select config-pictype">
+        <option value="png">PNG</option>
+        <option value="jpg">JPG</option>
+        <option value="gif">GIF</option>
+        <option value="webp">WEBP</option>
+        <option value="origin">ORIGIN</option>
+      </select>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>静默模式</h5>
+      </div>
+    </div>
+    <div class="row operation">
+      <label class="mdui-switch">
+        <input class="config-silence" type="checkbox" />
+        <i class="mdui-switch-icon"></i>
+      </label>
+    </div>
+  </div>
+
+  <script src="./src/main/js/mdui.min.js"></script>
+  <script src="./src/main/js/main.js"></script>
+</body>
+
+</html>
