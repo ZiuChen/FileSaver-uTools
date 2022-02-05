@@ -21,7 +21,7 @@ body {
 }
 
 .mdui-textfield {
-  flex-grow: 0.4;
+  width: 450px;
   padding: unset;
 }
 
