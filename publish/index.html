@@ -16,10 +16,16 @@
       <i class="mdui-icon material-icons">link</i>
     </a>
   </div>
-  <div class="mdui-container-fluid">
+  <div class="mdui-tab" mdui-tab>
+    <a href="#tab-common" class="mdui-ripple">常规</a>
+    <a href="#tab-custom" class="mdui-ripple">自定义</a>
+    <a href="#tab-listen" class="mdui-ripple">监听模式</a>
+    <a href="#tab-about" class="mdui-ripple">关于</a>
+  </div>
+  <div id="tab-common" class="mdui-p-a-2">
     <div class="row">
       <div class="mdui-typo-title title">
-        <h5>文件路径</h5>
+        <h5>默认保存路径</h5>
       </div>
     </div>
     <div class="row operation">
@@ -40,8 +46,21 @@
       <div class="mdui-textfield">
         <input class="mdui-textfield-input config-filename" type="text" />
       </div>
-      <!-- <button class="mdui-btn mdui-color-theme-accent mdui-ripple">保存</button> -->
+      <!-- <div class="filename-preview"></div> -->
     </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>静默模式</h5>
+      </div>
+    </div>
+    <div class="row operation">
+      <label class="mdui-switch">
+        <input class="config-silence" type="checkbox" />
+        <i class="mdui-switch-icon"></i>
+      </label>
+    </div>
+  </div>
+  <div id="tab-custom" class="mdui-p-a-2">
     <div class="row">
       <div class="mdui-typo-title title">
         <h5>图片文件格式</h5>
@@ -56,19 +75,12 @@
         <option value="origin">ORIGIN</option>
       </select>
     </div>
-    <div class="row">
-      <div class="mdui-typo-title title">
-        <h5>静默模式</h5>
-      </div>
-    </div>
-    <div class="row operation">
-      <label class="mdui-switch">
-        <input class="config-silence" type="checkbox" />
-        <i class="mdui-switch-icon"></i>
-      </label>
-    </div>
   </div>
-
+  <div id="tab-listen" class="mdui-p-a-2">
+  </div>
+  <div id="tab-about" class="mdui-p-a-2">
+    <img src="./src/icon/logo.png" alt="">
+  </div>
   <script src="./src/main/js/mdui.min.js"></script>
   <script src="./src/main/js/main.js"></script>
 </body>

@@ -6,7 +6,7 @@
     "preload": "preload.js",
     "logo": "logo.png",
     "platform": ["win32", "darwin", "linux"],
-    "version": "1.0.0",
+    "version": "2.0.0",
     "features": [
       {
         "code": "保存为文件",
@@ -18,14 +18,14 @@
           },
           {
             "type": "over",
-            "label": "保存为文本文件"
+            "label": "保存为文件"
           }
         ]
       },
       {
         "code": "修改设置",
         "explain": "修改插件设置",
-        "cmds": ["设置", "插件设置", "修改设置"]
+        "cmds": ["设置", "修改设置"]
       }
     ]
   }
