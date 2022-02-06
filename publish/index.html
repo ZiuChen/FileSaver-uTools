@@ -12,7 +12,7 @@
     <img class="logo" src="./src/icon/logo.png" alt="logo">
     <span class="mdui-typo-title">修改设置</span>
     <div class="mdui-toolbar-spacer"></div>
-    <a href="javascript:;" class="mdui-btn mdui-btn-icon" title="view Source Code">
+    <a href="javascript:;" class="mdui-btn mdui-btn-icon source-code" title="view Source Code">
       <i class="mdui-icon material-icons">link</i>
     </a>
   </div>
@@ -69,8 +69,11 @@
   <div id="tab-custom" class="mdui-p-a-2">
     <div class="row">
       <div class="mdui-typo-title title">
-        <h5>图片文件格式</h5>
+        <h5>图片格式</h5>
       </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '图片将转为此格式保存', position: 'right'}">
+        <i class="mdui-icon material-icons">info</i>
+      </button>
     </div>
     <div class="row operation">
       <select class="mdui-select config-pictype">

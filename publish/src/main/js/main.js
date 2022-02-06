@@ -19,12 +19,15 @@ function initConfig() {
   $(".config-silence")[0].checked = config["config-silence"].value;
   $(".config-pictype").val(config["config-pictype"].value);
   console.log($(".config-pictype"));
-  let inst = new mdui.Select(".config-pictype");
-  inst.handleUpdate();
+  new mdui.Select(".config-pictype")
+  .handleUpdate();
 }
 
 function addLisenter() {
   let defaultConfig = getDefaultConfig();
+  $(".source-code").on("click", (e) => {
+    utools.shellOpenExternal("https://github.com/ZiuChen/FileSaver-uTools");
+  });
   Object.getOwnPropertyNames(defaultConfig).forEach((id) => {
     $(`.${id}`).on("change", (e) => {
       tableUpdateCallBack(e);

@@ -6,7 +6,7 @@ const defaultConfig = {
   },
   "config-filename": {
     id: "config-filename",
-    value: "uTools_YYYY-mm-dd_HH:MM",
+    value: "uTools_YYYY-MM-DD_HH-mm-SS",
   },
   "config-pictype": {
     id: "config-pictype",
@@ -70,10 +70,10 @@ Date.prototype.format = function (fmt) {
   let ret;
   const opt = {
     "Y+": this.getFullYear().toString(),
-    "m+": (this.getMonth() + 1).toString(),
-    "d+": this.getDate().toString(),
+    "M+": (this.getMonth() + 1).toString(),
+    "D+": this.getDate().toString(),
     "H+": this.getHours().toString(),
-    "M+": this.getMinutes().toString(),
+    "m+": this.getMinutes().toString(),
     "S+": this.getSeconds().toString(),
   };
   for (let k in opt) {
@@ -120,5 +120,5 @@ window.fileNamePreview = function (originContent) {
 };
 
 window.checkIllegalCharacter = function (str) {
-    return str.search("[\\\\/:*?\"<>|]")
-}
+  return str.search('[\\\\/:*?"<>|]');
+};
