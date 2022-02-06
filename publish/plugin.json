@@ -2,7 +2,7 @@
     "pluginName": "保存为文件",
     "description": "将剪切板中的内容保存为文件",
     "author": "Ziu",
-    "main": "index.html",
+    "main": "http://127.0.0.1:5500/publish/index.html",
     "preload": "preload.js",
     "logo": "logo.png",
     "platform": ["win32", "darwin", "linux"],

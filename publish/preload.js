@@ -6,7 +6,7 @@ const defaultConfig = {
   },
   "config-filename": {
     id: "config-filename",
-    value: "uTools_" + "{ms_time_stamp}",
+    value: "uTools_YYYY-mm-dd_HH:MM",
   },
   "config-pictype": {
     id: "config-pictype",
@@ -17,17 +17,6 @@ const defaultConfig = {
     value: false,
   },
 };
-
-const customFileNameConfigs = [
-  "{Y}",
-  "{M}",
-  "{D}",
-  "{h}",
-  "{m}",
-  "{s}",
-  "{ms_time_stamp}",
-  "{s_time_stamp}",
-];
 
 utools.onPluginEnter(({ code, type, payload }) => {
   // utools.hideMainWindow();
@@ -66,44 +55,38 @@ function getSuffix(payload) {
   }
 }
 
+window.getFileName = function getFileName() {
+  let config = readConfig();
+  let rtnContent = new Date().format(config["config-filename"].value);
+  return rtnContent;
+};
+
 function getFilePath() {
   let config = readConfig();
   return config["config-path"].value;
 }
 
-function getFileName() {
-  let config = readConfig();
-  let originContent = config["config-filename"].value;
-  customFileNameConfigs.forEach((config) => {
-    let times = originContent.split(config).length - 1; // more than one replacement character
-    for (let i = 0; i < times; i++) {
-      originContent = originContent.replace(config, replacement(config));
+Date.prototype.format = function (fmt) {
+  let ret;
+  const opt = {
+    "Y+": this.getFullYear().toString(),
+    "m+": (this.getMonth() + 1).toString(),
+    "d+": this.getDate().toString(),
+    "H+": this.getHours().toString(),
+    "M+": this.getMinutes().toString(),
+    "S+": this.getSeconds().toString(),
+  };
+  for (let k in opt) {
+    ret = new RegExp("(" + k + ")").exec(fmt);
+    if (ret) {
+      fmt = fmt.replace(
+        ret[1],
+        ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, "0")
+      );
     }
-  });
-  return originContent;
-}
-
-function replacement(config) {
-  let date = new Date();
-  switch (config) {
-    case "{Y}":
-      return date.getFullYear();
-    case "{M}":
-      return date.getMonth() + 1;
-    case "{D}":
-      return date.getDay();
-    case "{h}":
-      return date.getHours();
-    case "{m}":
-      return date.getMinutes();
-    case "{s}":
-      return date.getSeconds();
-    case "{ms_time_stamp}":
-      return date.getTime();
-    case "{s_time_stamp}":
-      return parseInt(date.getTime() / 1000);
   }
-}
+  return fmt;
+};
 
 window.updateConfig = function (isInit, config) {
   if (isInit) {
@@ -125,3 +108,17 @@ window.readConfig = function () {
 window.getDefaultConfig = function () {
   return defaultConfig;
 };
+
+window.fileNamePreview = function (originContent) {
+  customFileNameConfigs.forEach((config) => {
+    let times = originContent.split(config).length - 1; // more than one replacement character
+    for (let i = 0; i < times; i++) {
+      originContent = originContent.replace(config, replacement(config));
+    }
+  });
+  return originContent;
+};
+
+window.checkIllegalCharacter = function (str) {
+    return str.search("[\\\\/:*?\"<>|]")
+}

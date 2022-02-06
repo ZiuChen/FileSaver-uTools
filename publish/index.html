@@ -32,13 +32,16 @@
       <div class="mdui-textfield">
         <input class="mdui-textfield-input config-path" type="text" />
       </div>
-      <button class="mdui-btn mdui-color-theme-accent mdui-ripple config-path-trigger">修改路径</button>
+      <div class="buttons">
+        <button class="mdui-btn mdui-color-theme-accent mdui-ripple config-path-open-trigger">打开</button>
+        <button class="mdui-btn mdui-color-theme-accent mdui-ripple config-path-change-trigger">修改</button>
+      </div>
     </div>
     <div class="row">
       <div class="mdui-typo-title title">
-        <h5>自定义文件名</h5>
+        <h5>文件命名</h5>
       </div>
-      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '支持生成语法', position: 'right'}">
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '支持标准日期和时间格式字符串', position: 'right'}">
         <i class="mdui-icon material-icons">info</i>
       </button>
     </div>
@@ -46,12 +49,15 @@
       <div class="mdui-textfield">
         <input class="mdui-textfield-input config-filename" type="text" />
       </div>
-      <!-- <div class="filename-preview"></div> -->
+      <div class="config-filename-preview"></div>
     </div>
     <div class="row">
       <div class="mdui-typo-title title">
         <h5>静默模式</h5>
       </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '文件保存后不弹出窗口', position: 'right'}">
+        <i class="mdui-icon material-icons">info</i>
+      </button>
     </div>
     <div class="row operation">
       <label class="mdui-switch">
