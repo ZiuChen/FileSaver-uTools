@@ -2,12 +2,11 @@ const $ = mdui.$;
 const select = new mdui.Select(".config-pictype");
 
 utools.onPluginReady(() => {
-  console.log("插件装配完成，已准备好");
   initConfig();
   addLisenter();
 });
 
-function initConfig(isinit) {
+function initConfig() {
   if (readConfig() === null) {
     updateConfig(true);
   }
@@ -18,8 +17,11 @@ function initConfig(isinit) {
     new Date("2022-01-01").format(config["config-filename"].value)
   );
   $(".config-silence")[0].checked = config["config-silence"].value;
+  $(".silence-state").html(config["config-silence"].value);
+  $(".config-autosave")[0].checked = config["config-autosave"].value;
+  $(".autosave-state").html(config["config-autosave"].value);
   $(".config-pictype").val(config["config-pictype"].value);
-  select.handleUpdate()
+  select.handleUpdate();
 }
 
 function addLisenter() {
@@ -77,7 +79,6 @@ function addLisenter() {
 
 function tableUpdateCallBack(event) {
   let config = readConfig();
-  console.log(event);
   if (event.target.className.indexOf("config-path") !== -1) {
     config["config-path"].value = event.target.value;
   } else if (event.target.className.indexOf("config-filename") !== -1) {
@@ -87,6 +88,10 @@ function tableUpdateCallBack(event) {
     config["config-pictype"].value = event.target.value;
   } else if (event.target.className.indexOf("config-silence") !== -1) {
     config["config-silence"].value = event.target.checked;
+    $(".silence-state").html(event.target.checked);
+  } else if (event.target.className.indexOf("config-autosave") !== -1) {
+    config["config-autosave"].value = event.target.checked;
+    $(".autosave-state").html(event.target.checked);
   }
   updateConfig(false, config);
 }

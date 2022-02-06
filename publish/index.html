@@ -10,7 +10,7 @@
 <body class="mdui-theme-primary-indigo mdui-theme-accent-indigo mdui-text-color-indigo mdui-color-grey-200">
   <div class="mdui-toolbar mdui-color-theme">
     <img class="logo" src="./src/icon/logo.png" alt="logo" />
-    <span class="mdui-typo-title">修改设置</span>
+    <span class="mdui-typo-title">超级粘贴</span>
     <div class="mdui-toolbar-spacer"></div>
     <a href="javascript:;" class="mdui-btn mdui-btn-icon restore" title="restore settings">
       <i class="mdui-icon material-icons">settings_backup_restore</i>
@@ -19,28 +19,10 @@
   <div class="mdui-tab" mdui-tab>
     <a href="#tab-common" class="mdui-ripple">常规</a>
     <a href="#tab-custom" class="mdui-ripple">自定义</a>
-    <a href="#tab-listen" class="mdui-ripple">监听模式</a>
+    <a href="#tab-listen" class="mdui-ripple">直接粘贴</a>
     <a href="#tab-about" class="mdui-ripple">关于</a>
   </div>
   <div id="tab-common" class="mdui-p-a-2">
-    <div class="row">
-      <div class="mdui-typo-title title">
-        <h5>默认保存路径</h5>
-      </div>
-    </div>
-    <div class="row operation">
-      <div class="mdui-textfield">
-        <input class="mdui-textfield-input config-path" type="text" />
-      </div>
-      <div class="buttons">
-        <button class="mdui-btn mdui-color-theme-accent mdui-ripple config-path-open-trigger">
-          打开
-        </button>
-        <button class="mdui-btn mdui-color-theme-accent mdui-ripple config-path-change-trigger">
-          修改
-        </button>
-      </div>
-    </div>
     <div class="row">
       <div class="mdui-typo-title title">
         <h5>文件命名</h5>
@@ -68,6 +50,7 @@
         <input class="config-silence" type="checkbox" />
         <i class="mdui-switch-icon"></i>
       </label>
+      <button class="mdui-btn silence-state"></button>
     </div>
   </div>
   <div id="tab-custom" class="mdui-p-a-2">
@@ -89,7 +72,41 @@
       </select>
     </div>
   </div>
-  <div id="tab-listen" class="mdui-p-a-2"></div>
+  <div id="tab-listen" class="mdui-p-a-2">
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>自动保存</h5>
+      </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '执行粘贴操作后自动保存到指定路径', position: 'right'}">
+        <i class="mdui-icon material-icons">info</i>
+      </button>
+    </div>
+    <div class="row operation">
+      <label class="mdui-switch">
+        <input class="config-autosave" type="checkbox" />
+        <i class="mdui-switch-icon"></i>
+      </label>
+      <button class="mdui-btn autosave-state"></button>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>自动保存路径</h5>
+      </div>
+    </div>
+    <div class="row operation">
+      <div class="mdui-textfield">
+        <input class="mdui-textfield-input config-path" type="text" />
+      </div>
+      <div class="buttons">
+        <button class="mdui-btn mdui-color-theme-accent mdui-ripple config-path-open-trigger">
+          打开
+        </button>
+        <button class="mdui-btn mdui-color-theme-accent mdui-ripple config-path-change-trigger">
+          修改
+        </button>
+      </div>
+    </div>
+  </div>
   <div id="tab-about" class="mdui-p-a-2">
     <div align="center" class="mdui-typo title">
       <img src="./src/icon/logo.png" alt="logo" />
@@ -101,7 +118,10 @@
         <span> 作者：<a href="javascript:;" class="author">Ziu</a> </span>
         <span>源代码：<a href="javascript:;" class="source-code">Github</a></span>
       </h6>
-      <h6>使用中遇到任何问题或有任何建议，欢迎在插件评论页或 <em>Github</em> 留言。</h6>
+      <h6>
+        使用中遇到任何问题或有任何建议，欢迎在插件评论页或
+        <em>Github</em> 留言。
+      </h6>
     </div>
   </div>
   <script src="./src/main/js/mdui.min.js"></script>
