@@ -1,4 +1,5 @@
 const fs = require("fs");
+const {clipboard} = require("electron");
 const defaultConfig = {
   "config-path": {
     id: "config-path",
@@ -14,23 +15,64 @@ const defaultConfig = {
   },
   "config-silence": {
     id: "config-silence",
-    value: false,
+    value: true,
+  },
+  "config-autosave": {
+    id: "config-autosave",
+    value: true
+  },
+  "config-codingformat": {
+    id: "config-codingformat",
+    value: "BASE64"// 可选：直接用BASE64还是fetch链接
   },
 };
 
 utools.onPluginEnter(({ code, type, payload }) => {
   // utools.hideMainWindow();
-  console.log("用户进入插件", code, type, payload);
-  if (type === "img") {
-    savePicAsFile(payload);
+  console.log(code);
+  if(code === "直接粘贴") {
+    utools.readCurrentFolderPath()
+    .then(res => {
+      console.log(type);
+      savePicAsFile(type, payload, res);
+    })
+  }
+  else if(code === "自动保存") {
+    if (type === "img") {
+      savePicAsFile(type, payload, getFilePath());
+    }
+    else if (type === "over") {
+      saveTextAsFile(type, payload, getFilePath());
+    }
   }
 });
 
-function savePicAsFile(payload) {
+function saveTextAsFile(type, payload, currentPath) {
   let config = readConfig();
-  let path = `${getFilePath()}\\${getFileName()}.${getSuffix(payload)}`;
-  let base64Data = payload.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
+  let path = `${currentPath}\\${getFileName()}.${getSuffix(type, payload)}`;
+  fs.writeFile(path, payload, (err) => {
+    if (err !== null) {
+      utools.showNotification(err);
+      return;
+    } else {
+      // no error reported
+      if (config["config-silence"].value === true) {
+        return;
+      } else {
+        utools.shellShowItemInFolder(path);
+      }
+    }
+  });
+}
+
+function savePicAsFile(type, payload, currentPath) {
+  let config = readConfig();
+  let img = DOMParse(clipboard.readHTML())
+  console.log(img.src.split("/").pop());
+  let Image = clipboard.readImage().toDataURL();
+  let base64Data = Image.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
   let buffer = Buffer.from(base64Data, "base64"); // to Buffer
+  let path = `${currentPath}\\${getFileName()}.${getSuffix(type, payload)}`;
   fs.writeFile(path, buffer, (err) => {
     if (err !== null) {
       utools.showNotification(err);
@@ -40,18 +82,31 @@ function savePicAsFile(payload) {
       if (config["config-silence"].value === true) {
         return;
       } else {
-        utools.shellShowItemInFolder(fullPath);
+        utools.shellShowItemInFolder(path);
       }
     }
   });
 }
 
-function getSuffix(payload) {
+function getSuffix(type, payload) {
   let config = readConfig();
-  if (config["config-pictype"].value === "origin") {
-    return payload.split("image/")[1].split(";base64,")[0];
-  } else {
-    return config["config-pictype"].value;
+  if(type === "img") {
+    if (config["config-pictype"].value === "origin") {
+      return payload.split("image/")[1].split(";base64,")[0];
+    } else {
+      return config["config-pictype"].value;
+    }
+  }
+  else if(type === "over") {
+    return "txt"
+  }
+  else if(type === "window") {
+    let img = DOMParse(clipboard.readHTML())
+    if(config["config-pictype"].value === "origin") {
+      return img.src.split("/").pop().split(".").pop()
+    } else {
+      return config["config-pictype"].value;
+    }
   }
 }
 
@@ -64,6 +119,12 @@ window.getFileName = function getFileName() {
 function getFilePath() {
   let config = readConfig();
   return config["config-path"].value;
+}
+
+function DOMParse(string) {
+  let div = document.createElement("div")
+  div.innerHTML = string
+  return div.firstChild
 }
 
 Date.prototype.format = function (fmt) {

@@ -43,3 +43,7 @@ button .mdui-icon {
 .title, .content {
   cursor: default;
 }
+
+.mdui-typo-title {
+  cursor: default;
+}
