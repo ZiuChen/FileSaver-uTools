@@ -1,15 +1,15 @@
 {
-    "pluginName": "保存为文件",
+    "pluginName": "超级粘贴",
     "description": "将剪切板中的内容保存为文件",
     "author": "Ziu",
     "main": "http://127.0.0.1:5500/publish/index.html",
     "preload": "preload.js",
     "logo": "logo.png",
     "platform": ["win32", "darwin", "linux"],
-    "version": "2.0.0",
+    "version": "1.0.0",
     "features": [
       {
-        "code": "保存为文件",
+        "code": "超级粘贴",
         "explain": "保存为文件",
         "cmds": [
           {

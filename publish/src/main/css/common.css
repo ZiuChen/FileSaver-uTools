@@ -35,3 +35,11 @@ button .mdui-icon {
   border: solid 10px white;
   border-radius: 450px;
 }
+
+.title > img {
+  zoom: 85%;
+}
+
+.title, .content {
+  cursor: default;
+}

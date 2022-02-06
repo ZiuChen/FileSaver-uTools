@@ -1,4 +1,5 @@
 const $ = mdui.$;
+const select = new mdui.Select(".config-pictype");
 
 utools.onPluginReady(() => {
   console.log("插件装配完成，已准备好");
@@ -6,7 +7,7 @@ utools.onPluginReady(() => {
   addLisenter();
 });
 
-function initConfig() {
+function initConfig(isinit) {
   if (readConfig() === null) {
     updateConfig(true);
   }
@@ -18,20 +19,40 @@ function initConfig() {
   );
   $(".config-silence")[0].checked = config["config-silence"].value;
   $(".config-pictype").val(config["config-pictype"].value);
-  console.log($(".config-pictype"));
-  new mdui.Select(".config-pictype")
-  .handleUpdate();
+  select.handleUpdate()
 }
 
 function addLisenter() {
   let defaultConfig = getDefaultConfig();
-  $(".source-code").on("click", (e) => {
-    utools.shellOpenExternal("https://github.com/ZiuChen/FileSaver-uTools");
-  });
   Object.getOwnPropertyNames(defaultConfig).forEach((id) => {
     $(`.${id}`).on("change", (e) => {
       tableUpdateCallBack(e);
     });
+  });
+  $(".restore").on("click", (e) => {
+    mdui.dialog({
+      title: "即将重置设置",
+      content: "按下确认，设置将恢复为初始状态。",
+      buttons: [
+        {
+          text: "取消",
+        },
+        {
+          text: "确认",
+          onClick: function (inst) {
+            updateConfig(true);
+            initConfig();
+            mdui.alert("设置已恢复初始值。");
+          },
+        },
+      ],
+    });
+  });
+  $(".source-code").on("click", (e) => {
+    utools.shellOpenExternal("https://github.com/ZiuChen/FileSaver-uTools");
+  });
+  $(".author").on("click", (e) => {
+    utools.shellOpenExternal("https://github.com/ZiuChen");
   });
   $(".config-path-open-trigger").on("click", (e) => {
     filePathOpenCallBack(e);
@@ -56,6 +77,7 @@ function addLisenter() {
 
 function tableUpdateCallBack(event) {
   let config = readConfig();
+  console.log(event);
   if (event.target.className.indexOf("config-path") !== -1) {
     config["config-path"].value = event.target.value;
   } else if (event.target.className.indexOf("config-filename") !== -1) {
