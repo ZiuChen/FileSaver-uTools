@@ -1,114 +1,75 @@
 const fs = require("fs");
-const {clipboard} = require("electron");
+const request = require("request");
+const { clipboard } = require("electron");
+const clipboardListener = require("clipboard-event");
 const defaultConfig = {
-  "config-path": {
-    id: "config-path",
-    value: utools.getPath("downloads"),
-  },
   "config-filename": {
     id: "config-filename",
     value: "uTools_YYYY-MM-DD_HH-mm-SS",
-  },
-  "config-pictype": {
-    id: "config-pictype",
-    value: "origin",
   },
   "config-silence": {
     id: "config-silence",
     value: true,
   },
+  "config-pictype": {
+    id: "config-pictype",
+    value: "origin",
+  },
+  "config-picencode": {
+    id: "config-picencode",
+    value: "base64", // origin: may occur network error but can keep the original size
+  },
   "config-autosave": {
     id: "config-autosave",
-    value: true
+    value: true,
   },
-  "config-codingformat": {
-    id: "config-codingformat",
-    value: "BASE64"// 可选：直接用BASE64还是fetch链接
+  "config-path": {
+    id: "config-path",
+    value: utools.getPath("downloads"),
+  },
+  "config-matchrule": {
+    id: "config-matchrule",
+    value: false,
+  },
+  "config-rules": {
+    id: "config-rules",
+    value: [
+      {
+        suffix: "cs",
+        rule: "using .*;$",
+      },
+      {
+        suffix: "java",
+        rule: "^package.*;$",
+      },
+      {
+        suffix: "html",
+        rule: "(? i)&lt;!DOCTYPE html",
+      },
+      {
+        suffix: "cpp",
+        rule: "^#include.*",
+      },
+    ],
   },
 };
 
-utools.onPluginEnter(({ code, type, payload }) => {
-  // utools.hideMainWindow();
-  console.log(code);
-  if(code === "直接粘贴") {
-    utools.readCurrentFolderPath()
-    .then(res => {
-      console.log(type);
-      savePicAsFile(type, payload, res);
-    })
-  }
-  else if(code === "自动保存") {
-    if (type === "img") {
-      savePicAsFile(type, payload, getFilePath());
-    }
-    else if (type === "over") {
-      saveTextAsFile(type, payload, getFilePath());
-    }
-  }
+console.log(clipboardListener);
+clipboardListener.startListening();
+clipboardListener.on("change", (event) => {
+  // console.log(event);
+	// let item = pbpaste();
+	// if (!item) return;
 });
 
-function saveTextAsFile(type, payload, currentPath) {
-  let config = readConfig();
-  let path = `${currentPath}\\${getFileName()}.${getSuffix(type, payload)}`;
-  fs.writeFile(path, payload, (err) => {
-    if (err !== null) {
-      utools.showNotification(err);
-      return;
-    } else {
-      // no error reported
-      if (config["config-silence"].value === true) {
-        return;
-      } else {
-        utools.shellShowItemInFolder(path);
-      }
-    }
-  });
-}
-
-function savePicAsFile(type, payload, currentPath) {
-  let config = readConfig();
-  let img = DOMParse(clipboard.readHTML())
-  console.log(img.src.split("/").pop());
-  let Image = clipboard.readImage().toDataURL();
-  let base64Data = Image.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
-  let buffer = Buffer.from(base64Data, "base64"); // to Buffer
-  let path = `${currentPath}\\${getFileName()}.${getSuffix(type, payload)}`;
-  fs.writeFile(path, buffer, (err) => {
-    if (err !== null) {
-      utools.showNotification(err);
-      return;
-    } else {
-      // no error reported
-      if (config["config-silence"].value === true) {
-        return;
-      } else {
-        utools.shellShowItemInFolder(path);
-      }
-    }
-  });
-}
-
-function getSuffix(type, payload) {
-  let config = readConfig();
-  if(type === "img") {
-    if (config["config-pictype"].value === "origin") {
-      return payload.split("image/")[1].split(";base64,")[0];
-    } else {
-      return config["config-pictype"].value;
-    }
+utools.onPluginEnter(({ code, type, payload }) => {
+  // utools.hideMainWindow();
+  if (code === "直接粘贴") {
+    utools.readCurrentFolderPath().then((res) => {
+    });
+  } else if (code === "自动保存") {
   }
-  else if(type === "over") {
-    return "txt"
-  }
-  else if(type === "window") {
-    let img = DOMParse(clipboard.readHTML())
-    if(config["config-pictype"].value === "origin") {
-      return img.src.split("/").pop().split(".").pop()
-    } else {
-      return config["config-pictype"].value;
-    }
-  }
-}
+});
 
 window.getFileName = function getFileName() {
   let config = readConfig();
@@ -122,9 +83,9 @@ function getFilePath() {
 }
 
 function DOMParse(string) {
-  let div = document.createElement("div")
-  div.innerHTML = string
-  return div.firstChild
+  let div = document.createElement("div");
+  div.innerHTML = string;
+  return div.firstChild;
 }
 
 Date.prototype.format = function (fmt) {
@@ -149,12 +110,8 @@ Date.prototype.format = function (fmt) {
   return fmt;
 };
 
-window.updateConfig = function (isInit, config) {
-  if (isInit) {
-    utools.dbStorage.setItem("config", JSON.stringify(defaultConfig));
-  } else {
-    utools.dbStorage.setItem("config", JSON.stringify(config));
-  }
+window.updateConfig = function updateConfig(config) {
+  utools.dbStorage.setItem("config", JSON.stringify(config));
   mdui.snackbar({
     message: "设置已更新",
     position: "right-bottom",
@@ -162,7 +119,7 @@ window.updateConfig = function (isInit, config) {
 };
 
 window.readConfig = function () {
-  const data = utools.dbStorage.getItem("config");
+  let data = utools.dbStorage.getItem("config");
   return JSON.parse(data);
 };
 
@@ -182,4 +139,30 @@ window.fileNamePreview = function (originContent) {
 
 window.checkIllegalCharacter = function (str) {
   return str.search('[\\\\/:*?"<>|]');
+};
+
+window.initlizeConfig = function initlizeConfig() {
+  if (readConfig() === null) {
+    utools.dbStorage.setItem("config", JSON.stringify(defaultConfig));
+    return;
+  }
+  let config = readConfig();
+  let configs = Object.getOwnPropertyNames(config);
+  let defaultConfigs = Object.getOwnPropertyNames(defaultConfig);
+  let removedConfigs = configs.filter((item) => {
+    return defaultConfigs.indexOf(item) === -1;
+  });
+  let newConfigs = defaultConfigs.filter((item) => {
+    return configs.indexOf(item) === -1;
+  });
+  if (newConfigs.length === 0 && removedConfigs.length === 0) return;
+  console.log(newConfigs);
+  console.log(removedConfigs);
+  removedConfigs.forEach((item) => {
+    delete config[item];
+  });
+  newConfigs.forEach((item) => {
+    config[item] = defaultConfig[item];
+  });
+  updateConfig(config);
 };

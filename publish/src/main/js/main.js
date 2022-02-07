@@ -1,5 +1,8 @@
 const $ = mdui.$;
-const select = new mdui.Select(".config-pictype");
+const selects = [
+  new mdui.Select(".config-pictype"),
+  new mdui.Select(".config-picencode"),
+];
 
 utools.onPluginReady(() => {
   initConfig();
@@ -7,9 +10,7 @@ utools.onPluginReady(() => {
 });
 
 function initConfig() {
-  if (readConfig() === null) {
-    updateConfig(true);
-  }
+  initlizeConfig();
   let config = readConfig();
   $(".config-path").val(config["config-path"].value);
   $(".config-filename").val(config["config-filename"].value);
@@ -21,7 +22,10 @@ function initConfig() {
   $(".config-autosave")[0].checked = config["config-autosave"].value;
   $(".autosave-state").html(config["config-autosave"].value);
   $(".config-pictype").val(config["config-pictype"].value);
-  select.handleUpdate();
+  $(".config-picencode").val(config["config-picencode"].value);
+  selects.forEach((select) => {
+    select.handleUpdate();
+  });
 }
 
 function addLisenter() {
@@ -42,7 +46,7 @@ function addLisenter() {
         {
           text: "确认",
           onClick: function (inst) {
-            updateConfig(true);
+            updateConfig(getDefaultConfig());
             initConfig();
             mdui.alert("设置已恢复初始值。");
           },
@@ -86,6 +90,8 @@ function tableUpdateCallBack(event) {
     config["config-filename"].value = event.target.value;
   } else if (event.target.className.indexOf("config-pictype") !== -1) {
     config["config-pictype"].value = event.target.value;
+  } else if (event.target.className.indexOf("config-picencode") !== -1) {
+    config["config-picencode"].value = event.target.value;
   } else if (event.target.className.indexOf("config-silence") !== -1) {
     config["config-silence"].value = event.target.checked;
     $(".silence-state").html(event.target.checked);
@@ -93,7 +99,7 @@ function tableUpdateCallBack(event) {
     config["config-autosave"].value = event.target.checked;
     $(".autosave-state").html(event.target.checked);
   }
-  updateConfig(false, config);
+  updateConfig(config);
 }
 
 function filePathOpenCallBack(event) {

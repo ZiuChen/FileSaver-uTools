@@ -19,7 +19,7 @@
   <div class="mdui-tab" mdui-tab>
     <a href="#tab-common" class="mdui-ripple">常规</a>
     <a href="#tab-custom" class="mdui-ripple">自定义</a>
-    <a href="#tab-listen" class="mdui-ripple">直接粘贴</a>
+    <a href="#tab-listen" class="mdui-ripple">监听模式</a>
     <a href="#tab-about" class="mdui-ripple">关于</a>
   </div>
   <div id="tab-common" class="mdui-p-a-2">
@@ -69,6 +69,20 @@
         <option value="gif">GIF</option>
         <option value="webp">WEBP</option>
         <option value="origin">ORIGIN</option>
+      </select>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>图片编码方式</h5>
+      </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '图片将以何种方式编码保存', position: 'right'}">
+        <i class="mdui-icon material-icons">info</i>
+      </button>
+    </div>
+    <div class="row operation">
+      <select class="mdui-select config-picencode">
+        <option value="origin">ORIGIN</option>
+        <option value="base64">BASE64</option>
       </select>
     </div>
   </div>

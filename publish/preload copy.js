@@ -1,179 +1,181 @@
 const fs = require("fs");
+const { clipboard } = require("electron");
+const request = require('request');
 const defaultConfig = {
-    "config-path": {
-        id: "config-path",
-        value: utools.getPath("downloads")
-    },
-    "config-filename": {
-        id: "config-filename",
-        value: "uTools_" + "{ms_time_stamp}"
-    },
-    "config-pictype": {
-        id: "config-pictype",
-        value: "origin"
-    },
-    "config-silence": {
-        id: "config-silence",
-        value: false
-    }
+  "config-path": {
+    id: "config-path",
+    value: utools.getPath("downloads"),
+  },
+  "config-filename": {
+    id: "config-filename",
+    value: "uTools_YYYY-MM-DD_HH-mm-SS",
+  },
+  "config-pictype": {
+    id: "config-pictype",
+    value: "origin",
+  },
+  "config-silence": {
+    id: "config-silence",
+    value: true,
+  },
+  "config-autosave": {
+    id: "config-autosave",
+    value: true,
+  },
+  "config-codingformat": {
+    id: "config-codingformat",
+    value: "BASE64", // 可选：直接用BASE64还是fetch链接
+  },
 };
 
-window.exports = {
-    保存为文件: {
-        mode: "none",
-        args: {
-            enter: (action) => {
-                window.utools.hideMainWindow()
-                Object.getOwnPropertyNames(defaultConfig).forEach((config) => {
-                    if (utools.dbStorage.getItem(config) === null) {
-                        utools.dbStorage.setItem(config, defaultConfig[config].value);
-                    }
-                });
-                let filePath = utools.dbStorage.getItem("config-path")
-                let fileName = getFileName(utools.dbStorage.getItem("config-filename")) // read replacement character
-                let fullPath
-                let writeInData
-                if (action.type === "img") {
-                    let fileType = action.payload.split("image/")[1].split(";base64,")[0] // get the picture type
-                    // fullPath = `${filePath}\\${fileName}.${fileType}`
-                    fullPath = `${filePath}\\${fileName}.gif`
-                    let base64Data = action.payload.replace(
-                        /^data:image\/\w+;base64,/,
-                        ""
-                    ) // remove the prefix
-                    writeInData = Buffer.from(base64Data, "base64") // to Buffer
-                } else if (action.type === "over") {
-                    let fileType = "txt"
-                    fullPath = `${filePath}\\${fileName}.${fileType}`
-                    writeInData = action.payload
-                }
-                fs.writeFile(fullPath, writeInData, (err) => {
-                    if (err !== null) {
-                        utools.showNotification(err)
-                        return
-                    } else {
-                        // no error reported
-                        if (utools.dbStorage.getItem("config-silence") === true) {
-                            return
-                        } else {
-                            utools.shellShowItemInFolder(fullPath)
-                        }
-                    }
-                })
-                window.utools.outPlugin()
-                function getFileName(configFilename) {
-                    const customConfigs = ["{Y}", "{M}", "{D}", "{h}", "{m}", "{s}", "{ms_time_stamp}", "{s_time_stamp}"]
-                    customConfigs.forEach(config => {
-                        let times = configFilename.split(config).length - 1 // more than one replacement character
-                        for (let i = 0; i < times; i++) {
-                            configFilename = configFilename.replace(config, replacement(config))
-                        }
-                    })
-                    return configFilename
-                }
-                function replacement(config) {
-                    let date = new Date()
-                    switch (config) {
-                        case "{Y}": return date.getFullYear()
-                        case "{M}": return date.getMonth() + 1
-                        case "{D}": return date.getDay()
-                        case "{h}": return date.getHours()
-                        case "{m}": return date.getMinutes()
-                        case "{s}": return date.getSeconds()
-                        case "{ms_time_stamp}": return date.getTime()
-                        case "{s_time_stamp}": return parseInt(date.getTime() / 1000)
-                    }
-                }
-            },
-        },
-    },
-    修改设置: {
-        mode: "list",
-        args: {
-            enter: (action, callbackSetList) => {
-                callbackSetList([
-                    {
-                        title: "设置路径",
-                        description: "修改默认保存位置",
-                        icon: "./src/icon/path.png",
-                        type: "config-path",
-                    },
-                    {
-                        title: "设置文件名",
-                        description: "修改保存的文件名",
-                        icon: "./src/icon/filename.png",
-                        type: "config-filename",
-                    },
-                    {
-                        title: "设置保存图片格式",
-                        description: "修改保存的图片格式",
-                        icon: "./src/icon/pictype.png",
-                        type: "config-pictype",
-                    },
-                    {
-                        title: "静默保存",
-                        description: "开启状态下，保存时不弹出窗口",
-                        icon: "./src/icon/silence.png",
-                        type: "config-silence",
-                    },
-                    {
-                        title: "重置设置",
-                        description: "恢复初始设置",
-                        icon: "./src/icon/restore.png",
-                        type: "config-restore",
-                    },
-                ])
-            },
-            select: (action, itemData, callbackSetList) => {
-                Object.getOwnPropertyNames(defaultConfig).forEach((config) => {
-                    if (utools.dbStorage.getItem(config) === null) {
-                        utools.dbStorage.setItem(config, defaultConfig[config].value);
-                    }
-                });
-                let type = itemData.type
-                if (type === "config-path") {
-                    window.utools.hideMainWindow()
-                    let newPath = utools.showOpenDialog({
-                        title: "设置文件保存位置",
-                        defaultPath: utools.getPath("downloads"),
-                        buttonLabel: "选择",
-                        properties: ["openDirectory", "createDirectory", "promptToCreate"],
-                    })
-                    if (newPath === null) return
-                    else {
-                        utools.dbStorage.setItem("config-path", newPath)
-                        utools.showNotification(`已修改文件保存位置：${newPath}`)
-                    }
-                    window.utools.outPlugin()
-                } else if (type === "config-filename") {
-                    utools.setSubInput((obj) => {
-                        utools.dbStorage.setItem("config-filename", obj.text + "_{ms_time_stamp}")
-                    }, "输入内容将实时写入设置", true)
-                } else if (type === "config-pictype") {
-                    callbackSetList(getFileTypeArray())``
-                    
-                    function getFileTypeArray() {
-                        let picTypes = ["png", "jpg", "webp", "gif"]
-                        let rtnArray = []
-                        picTypes.forEach(item => {
-                            let typeObject = {
-                                title: item,
-                                description: `保存为 .${ item } 格式`,
-                                icon: "./src/icon/pictype.png",
-                                type: `config-pictype-${ item }`
-                            }
-                            rtnArray.push(typeObject)
-                        })
-                        return rtnArray
-                    }
-                } else if (type === "config-restore") {
-                    window.utools.hideMainWindow()
-                    utools.dbStorage.setItem("config", JSON.stringify(defaultConfig))
-                    utools.showNotification("已恢复初始设置")
-                    window.utools.outPlugin()
-                }
-                
-            },
-        },
-    },
+utools.onPluginEnter(({ code, type, payload }) => {
+  // utools.hideMainWindow();
+  console.log(code);
+  if (code === "直接粘贴") {
+    utools.readCurrentFolderPath().then((res) => {
+      console.log(res);
+      // let url = "https://www.baidu.com/img/PC_880906d2a4ad95f5fafb2e540c5cdad7.png"
+      // request(url).pipe(fs.createWriteStream("D:\\Downloads\\sample.gif"))
+    });
+  } else if (code === "自动保存") {
+    if (type === "img") {
+      savePicAsFile(type, payload, getFilePath());
+    } else if (type === "over") {
+      saveTextAsFile(type, payload, getFilePath());
+    }
+  }
+});
+
+function saveTextAsFile(type, payload, currentPath) {
+  let config = readConfig();
+  let path = `${currentPath}\\${getFileName()}.${getSuffix(type, payload)}`;
+  let img = DOMParse(clipboard.readHTML());
+  fs.writeFile(path, img, (err) => {
+    if (err !== null) {
+      utools.showNotification(err);
+      return;
+    } else {
+      // no error reported
+      if (config["config-silence"].value === true) {
+        return;
+      } else {
+        utools.shellShowItemInFolder(path);
+      }
+    }
+  });
+}
+
+function savePicAsFile(type, payload, currentPath) {
+  let config = readConfig();
+  let Image = clipboard.readImage().toDataURL();
+  let base64Data = Image.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
+  let buffer = Buffer.from(base64Data, "base64"); // to Buffer
+  let path = `${currentPath}\\${getFileName()}.${getSuffix(type, payload)}`;
+  fs.writeFile(path, img.toBitmap(), (err) => {
+    if (err !== null) {
+      utools.showNotification(err);
+      return;
+    } else {
+      // no error reported
+      if (config["config-silence"].value === true) {
+        return;
+      } else {
+        utools.shellShowItemInFolder(path);
+      }
+    }
+  });
+}
+
+function getSuffix(type, payload) {
+  let config = readConfig();
+  if (type === "img") {
+    if (config["config-pictype"].value === "origin") {
+      return payload.split("image/")[1].split(";base64,")[0];
+    } else {
+      return config["config-pictype"].value;
+    }
+  } else if (type === "over") {
+    return "txt";
+  } else if (type === "window") {
+    let img = DOMParse(clipboard.readHTML());
+    if (config["config-pictype"].value === "origin") {
+      return img.src.split("/").pop().split(".").pop();
+    } else {
+      return config["config-pictype"].value;
+    }
+  }
+}
+
+window.getFileName = function getFileName() {
+  let config = readConfig();
+  let rtnContent = new Date().format(config["config-filename"].value);
+  return rtnContent;
+};
+
+function getFilePath() {
+  let config = readConfig();
+  return config["config-path"].value;
+}
+
+function DOMParse(string) {
+  let div = document.createElement("div");
+  div.innerHTML = string;
+  return div.firstChild;
+}
+
+Date.prototype.format = function (fmt) {
+  let ret;
+  const opt = {
+    "Y+": this.getFullYear().toString(),
+    "M+": (this.getMonth() + 1).toString(),
+    "D+": this.getDate().toString(),
+    "H+": this.getHours().toString(),
+    "m+": this.getMinutes().toString(),
+    "S+": this.getSeconds().toString(),
+  };
+  for (let k in opt) {
+    ret = new RegExp("(" + k + ")").exec(fmt);
+    if (ret) {
+      fmt = fmt.replace(
+        ret[1],
+        ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, "0")
+      );
+    }
+  }
+  return fmt;
+};
+
+window.updateConfig = function (isInit, config) {
+  if (isInit) {
+    utools.dbStorage.setItem("config", JSON.stringify(defaultConfig));
+  } else {
+    utools.dbStorage.setItem("config", JSON.stringify(config));
+  }
+  mdui.snackbar({
+    message: "设置已更新",
+    position: "right-bottom",
+  });
+};
+
+window.readConfig = function () {
+  const data = utools.dbStorage.getItem("config");
+  return JSON.parse(data);
+};
+
+window.getDefaultConfig = function () {
+  return defaultConfig;
+};
+
+window.fileNamePreview = function (originContent) {
+  customFileNameConfigs.forEach((config) => {
+    let times = originContent.split(config).length - 1; // more than one replacement character
+    for (let i = 0; i < times; i++) {
+      originContent = originContent.replace(config, replacement(config));
+    }
+  });
+  return originContent;
+};
+
+window.checkIllegalCharacter = function (str) {
+  return str.search('[\\\\/:*?"<>|]');
 };
