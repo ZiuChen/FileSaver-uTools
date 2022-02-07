@@ -2,6 +2,7 @@ const $ = mdui.$;
 const selects = [
   new mdui.Select(".config-pictype"),
   new mdui.Select(".config-picencode"),
+  new mdui.Select(".config-textencode"),
 ];
 
 utools.onPluginReady(() => {
@@ -23,6 +24,7 @@ function initConfig() {
   $(".autosave-state").html(config["config-autosave"].value);
   $(".config-pictype").val(config["config-pictype"].value);
   $(".config-picencode").val(config["config-picencode"].value);
+  $(".config-textencode").val(config["config-textencode"].value);
   selects.forEach((select) => {
     select.handleUpdate();
   });
@@ -92,6 +94,8 @@ function tableUpdateCallBack(event) {
     config["config-pictype"].value = event.target.value;
   } else if (event.target.className.indexOf("config-picencode") !== -1) {
     config["config-picencode"].value = event.target.value;
+  } else if (event.target.className.indexOf("config-textencode") !== -1) {
+    config["config-textencode"].value = event.target.value;
   } else if (event.target.className.indexOf("config-silence") !== -1) {
     config["config-silence"].value = event.target.checked;
     $(".silence-state").html(event.target.checked);

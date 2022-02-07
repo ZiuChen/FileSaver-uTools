@@ -1,6 +1,7 @@
 const fs = require("fs");
 const request = require("request");
 const { clipboard } = require("electron");
+const clip = clipboard;
 const clipboardListener = require("clipboard-event");
 const defaultConfig = {
   "config-filename": {
@@ -19,6 +20,10 @@ const defaultConfig = {
     id: "config-picencode",
     value: "base64", // origin: may occur network error but can keep the original size
   },
+  "config-textencode": {
+    id: "config-textencode",
+    value: "text", // html: with colorful style
+  },
   "config-autosave": {
     id: "config-autosave",
     value: true,
@@ -26,6 +31,10 @@ const defaultConfig = {
   "config-path": {
     id: "config-path",
     value: utools.getPath("downloads"),
+  },
+  "config-lisenmode": {
+    id: "config-lisenmode",
+    value: true,
   },
   "config-matchrule": {
     id: "config-matchrule",
@@ -54,21 +63,95 @@ const defaultConfig = {
   },
 };
 
-console.log(clipboardListener);
 clipboardListener.startListening();
-clipboardListener.on("change", (event) => {
-  // console.log(event);
-	// let item = pbpaste();
-	// if (!item) return;
+clipboardListener.on("change", () => {
+  // hide plugin but dont exit
+  let item = getItem();
+  console.log(item);
 });
+
+function getItem() {
+  let config = readConfig();
+  if (!clip.readImage().isEmpty()) {
+    // image
+    if (config["config-picencode"].value === "base64") {
+      if (getPicSuffix() === "gif") {
+        // let reader = new FileReader()
+        // console.log(reader);
+        return {
+          type: "imgURL",
+          origin: getPicSuffix(),
+          content: getPicSrc(),
+        };
+      } else {
+        return {
+          type: "base64",
+          origin: getPicSuffix(),
+          content: clip.readImage().toDataURL(),
+        };
+      }
+    } else {
+      return {
+        type: "imgURL",
+        origin: getPicSuffix(),
+        content: getPicSrc(),
+      };
+    }
+  } else {
+    if (clip.readText() !== "") {
+      // text
+      // TODO: ADD Custom Matching Rules
+      if (config["config-textencode"].value === "text") {
+        return {
+          type: "plainText",
+          origin: getTextSuffix(),
+          content: clip.readText(),
+        };
+      } else {
+        return {
+          type: "DOMElement",
+          origin: getHTMLSuffix(),
+          content: DOMParse(clip.readHTML()),
+        };
+      }
+    } else {
+      // files
+      return {
+        type: "filePath",
+        origin: "none",
+        content: clipboard
+          .readBuffer("FileNameW")
+          .toString("ucs2")
+          .replace(new RegExp(String.fromCharCode(0), "g"), ""),
+      };
+    }
+  }
+
+  // clip.readBuffer()
+}
+
+function gif2DataUrl() {
+
+}
+
+function getHTMLSuffix() {
+  return "html";
+}
+
+function getTextSuffix() {
+  return "txt";
+}
+
+function getPicSuffix() {
+  return getPicSrc().split("/").pop().split(".").pop();
+}
+
+function getPicSrc() {
+  return DOMParse(clip.readHTML()).src;
+}
 
 utools.onPluginEnter(({ code, type, payload }) => {
   // utools.hideMainWindow();
-  if (code === "直接粘贴") {
-    utools.readCurrentFolderPath().then((res) => {
-    });
-  } else if (code === "自动保存") {
-  }
 });
 
 window.getFileName = function getFileName() {
@@ -76,11 +159,6 @@ window.getFileName = function getFileName() {
   let rtnContent = new Date().format(config["config-filename"].value);
   return rtnContent;
 };
-
-function getFilePath() {
-  let config = readConfig();
-  return config["config-path"].value;
-}
 
 function DOMParse(string) {
   let div = document.createElement("div");
@@ -156,8 +234,6 @@ window.initlizeConfig = function initlizeConfig() {
     return configs.indexOf(item) === -1;
   });
   if (newConfigs.length === 0 && removedConfigs.length === 0) return;
-  console.log(newConfigs);
-  console.log(removedConfigs);
   removedConfigs.forEach((item) => {
     delete config[item];
   });
