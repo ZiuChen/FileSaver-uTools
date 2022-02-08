@@ -75,25 +75,15 @@ function getItem() {
   if (!clip.readImage().isEmpty()) {
     // image
     if (config["config-picencode"].value === "base64") {
-      if (getPicSuffix() === "gif") {
-        // let reader = new FileReader()
-        // console.log(reader);
-        return {
-          type: "imgURL",
-          origin: getPicSuffix(),
-          content: getPicSrc(),
-        };
-      } else {
-        return {
-          type: "base64",
-          origin: getPicSuffix(),
-          content: clip.readImage().toDataURL(),
-        };
-      }
+      return {
+        type: "base64",
+        origin: getPicSuffix(),
+        content: getPicBase64(),
+      };
     } else {
       return {
         type: "imgURL",
-        origin: getPicSuffix(),
+        origin: "none",
         content: getPicSrc(),
       };
     }
@@ -126,12 +116,6 @@ function getItem() {
       };
     }
   }
-
-  // clip.readBuffer()
-}
-
-function gif2DataUrl() {
-
 }
 
 function getHTMLSuffix() {
@@ -143,7 +127,11 @@ function getTextSuffix() {
 }
 
 function getPicSuffix() {
-  return getPicSrc().split("/").pop().split(".").pop();
+  return getPicBase64().split("data:image/")[1].split(";base64,")[0]
+}
+
+function getPicBase64() {
+  return clip.readImage().toDataURL()
 }
 
 function getPicSrc() {
