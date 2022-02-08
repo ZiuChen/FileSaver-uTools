@@ -94,7 +94,7 @@ function getItem() {
         return {
           type: "DOMElement",
           origin: getHTMLSuffix(),
-          content: DOMParse(clip.readHTML()),
+          content: clip.readHTML(),
         };
       }
     } else {
@@ -117,9 +117,89 @@ window.InitListenMode = function () {
   clipboardListener.on("change", () => {
     // hide plugin but dont exit
     let item = getItem();
+    // TODO: Decoupling acquisition pictures and saves
+    switch (item.type) {
+      case "base64":
+        base64ToFile(item.content, item.origin);
+        break;
+      case "imgURL":
+        // imgURLToFile(item.content);
+        break;
+      case "plainText":
+        // textToFile(item.content, item.origin)
+        break;
+      case "DOMElement":
+        // DOMElementToFile(item.content, item.origin);
+        break;
+      case "filePath":
+        // nothing to do
+        break;
+      default:
+        break;
+    }
     console.log(item);
   });
 };
+
+function base64ToFile(base64, suffix) {
+  let base64Data = base64.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
+  let buffer = Buffer.from(base64Data, "base64"); // to Buffer
+  let path = `${utools.getPath("temp")}\\${getFileName()}.${suffix}`;
+  fs.writeFile(path, buffer, (err) => {
+    if (err !== null) {
+      utools.showNotification(err);
+      return;
+    } else {
+      // success
+      utools.copyFile(path);
+    }
+  });
+}
+
+function imgURLToFile(url) {
+  // TODO: pass suffix dynamically
+  // TODO: add progress bar
+  // TODO: processing file url
+  // TODO: Throw an exception
+  //       exp: visit https://raw.githubusercontent.com/ZiuChen/FileSaver-uTools/v2/image/sample.gif
+  let path = `${utools.getPath("temp")}\\${getFileName()}.gif`;
+  let stream = fs.createWriteStream(path);
+  request(url)
+    .pipe(stream)
+    .on("close", (err) => {
+      utools.copyFile(path);
+      if (err) {
+        utools.showNotification(err);
+      }
+    });
+}
+
+function textToFile(text, suffix) {
+  let path = `${utools.getPath("temp")}\\${getFileName()}.${suffix}`;
+  fs.writeFile(path, text, (err) => {
+    if (err !== null) {
+      utools.showNotification(err);
+      return;
+    } else {
+      // success
+      utools.copyFile(path);
+    }
+  });
+}
+
+function DOMElementToFile(DOMElement, suffix) {
+  let buffer = Buffer.from(DOMElement, "utf8"); // to Buffer
+  let path = `${utools.getPath("temp")}\\${getFileName()}.${suffix}`;
+  fs.writeFile(path, buffer, (err) => {
+    if (err !== null) {
+      utools.showNotification(err);
+      return;
+    } else {
+      // success
+      utools.copyFile(path);
+    }
+  });
+}
 
 window.toggleListenModeState = function (param) {
   if (param) {
