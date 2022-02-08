@@ -103,6 +103,21 @@
   <div id="tab-listen" class="mdui-p-a-2">
     <div class="row">
       <div class="mdui-typo-title title">
+        <h5>监听模式</h5>
+      </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '将剪切板内容实时转为文件并重新写入剪切板', position: 'right'}">
+        <i class="mdui-icon material-icons">info</i>
+      </button>
+    </div>
+    <div class="row operation">
+      <label class="mdui-switch">
+        <input class="config-listenmode" type="checkbox" />
+        <i class="mdui-switch-icon"></i>
+      </label>
+      <button class="mdui-btn listenmode-state"></button>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
         <h5>自动保存</h5>
       </div>
       <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '执行粘贴操作后自动保存到指定路径', position: 'right'}">

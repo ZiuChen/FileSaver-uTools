@@ -26,14 +26,14 @@ const defaultConfig = {
   },
   "config-autosave": {
     id: "config-autosave",
-    value: true,
+    value: false,
   },
   "config-path": {
     id: "config-path",
     value: utools.getPath("downloads"),
   },
-  "config-lisenmode": {
-    id: "config-lisenmode",
+  "config-listenmode": {
+    id: "config-listenmode",
     value: true,
   },
   "config-matchrule": {
@@ -62,13 +62,6 @@ const defaultConfig = {
     ],
   },
 };
-
-clipboardListener.startListening();
-clipboardListener.on("change", () => {
-  // hide plugin but dont exit
-  let item = getItem();
-  console.log(item);
-});
 
 function getItem() {
   let config = readConfig();
@@ -118,6 +111,26 @@ function getItem() {
   }
 }
 
+window.InitListenMode = function () {
+  let config = readConfig();
+  toggleListenModeState(config["config-listenmode"].value);
+  clipboardListener.on("change", () => {
+    // hide plugin but dont exit
+    let item = getItem();
+    console.log(item);
+  });
+};
+
+window.toggleListenModeState = function (param) {
+  if (param) {
+    // true
+    clipboardListener.startListening();
+  } else {
+    // false
+    clipboardListener.stopListening();
+  }
+};
+
 function getHTMLSuffix() {
   return "html";
 }
@@ -127,11 +140,11 @@ function getTextSuffix() {
 }
 
 function getPicSuffix() {
-  return getPicBase64().split("data:image/")[1].split(";base64,")[0]
+  return getPicBase64().split("data:image/")[1].split(";base64,")[0];
 }
 
 function getPicBase64() {
-  return clip.readImage().toDataURL()
+  return clip.readImage().toDataURL();
 }
 
 function getPicSrc() {

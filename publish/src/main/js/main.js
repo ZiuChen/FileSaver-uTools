@@ -8,6 +8,7 @@ const selects = [
 utools.onPluginReady(() => {
   initConfig();
   addLisenter();
+  InitListenMode();
 });
 
 function initConfig() {
@@ -22,6 +23,8 @@ function initConfig() {
   $(".silence-state").html(config["config-silence"].value);
   $(".config-autosave")[0].checked = config["config-autosave"].value;
   $(".autosave-state").html(config["config-autosave"].value);
+  $(".config-listenmode")[0].checked = config["config-listenmode"].value;
+  $(".listenmode-state").html(config["config-listenmode"].value);
   $(".config-pictype").val(config["config-pictype"].value);
   $(".config-picencode").val(config["config-picencode"].value);
   $(".config-textencode").val(config["config-textencode"].value);
@@ -102,6 +105,10 @@ function tableUpdateCallBack(event) {
   } else if (event.target.className.indexOf("config-autosave") !== -1) {
     config["config-autosave"].value = event.target.checked;
     $(".autosave-state").html(event.target.checked);
+  } else if (event.target.className.indexOf("config-listenmode") !== -1) {
+    toggleListenModeState(event.target.checked);
+    config["config-listenmode"].value = event.target.checked;
+    $(".listenmode-state").html(event.target.checked);
   }
   updateConfig(config);
 }
