@@ -67,6 +67,7 @@ function getItem() {
   let config = readConfig();
   if (!clip.readImage().isEmpty()) {
     // image
+    // TODO: Automatic decide which method used
     if (config["config-picencode"].value === "base64") {
       return {
         type: "base64",
@@ -74,6 +75,7 @@ function getItem() {
         content: getPicBase64(),
       };
     } else {
+      console.log(getPicSrc());
       return {
         type: "imgURL",
         origin: "none",
@@ -120,16 +122,17 @@ window.InitListenMode = function () {
     // TODO: Decoupling acquisition pictures and saves
     switch (item.type) {
       case "base64":
-        base64ToFile(item.content, item.origin);
+        saveFileAsTemp(item.content, item.origin, "copy");
         break;
       case "imgURL":
-        // imgURLToFile(item.content);
+        requestFileAsTemp(item.content, item.origin);
         break;
       case "plainText":
-        // textToFile(item.content, item.origin)
+        saveFileAsTemp(item.content, item.origin, "copy")
         break;
       case "DOMElement":
-        // DOMElementToFile(item.content, item.origin);
+        let buffer = Buffer.from(item.content, "utf8"); // to Buffer
+        saveFileAsTemp(buffer, item.origin, "copy")
         break;
       case "filePath":
         // nothing to do
@@ -141,62 +144,50 @@ window.InitListenMode = function () {
   });
 };
 
-function base64ToFile(base64, suffix) {
-  let base64Data = base64.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
-  let buffer = Buffer.from(base64Data, "base64"); // to Buffer
-  let path = `${utools.getPath("temp")}\\${getFileName()}.${suffix}`;
-  fs.writeFile(path, buffer, (err) => {
-    if (err !== null) {
-      utools.showNotification(err);
-      return;
-    } else {
-      // success
-      utools.copyFile(path);
-    }
-  });
-}
-
-function imgURLToFile(url) {
-  // TODO: pass suffix dynamically
+function requestFileAsTemp(url, suffix) {
   // TODO: add progress bar
   // TODO: processing file url
-  // TODO: Throw an exception
-  //       exp: visit https://raw.githubusercontent.com/ZiuChen/FileSaver-uTools/v2/image/sample.gif
-  let path = `${utools.getPath("temp")}\\${getFileName()}.gif`;
-  let stream = fs.createWriteStream(path);
-  request(url)
-    .pipe(stream)
-    .on("close", (err) => {
-      utools.copyFile(path);
-      if (err) {
-        utools.showNotification(err);
+  let req = request
+    .get({ url: url, rejectUnauthorized: false })
+    .on("response", (response) => {
+      suffix = response.headers["content-type"];
+      suffix = suffix.substring(suffix.lastIndexOf("/") + 1);
+      if (getPicType() !== "origin") {
+        suffix = getPicType();
       }
+      let path = `${utools.getPath("temp")}\\${getFileName()}.${suffix}`;
+      req.pipe(fs.createWriteStream(path));
+      req.on("close", (err) => {
+        utools.copyFile(path);
+        if (err) {
+          utools.showNotification(err);
+          return;
+        }
+        return path;
+      });
+    })
+    .on("error", (err) => {
+      utools.showNotification(err);
     });
 }
 
-function textToFile(text, suffix) {
+function saveFileAsTemp(content, suffix, callBack) {
+  if (suffix === "none" || getPicType() !== "origin") {
+    suffix = getPicType();
+  }
   let path = `${utools.getPath("temp")}\\${getFileName()}.${suffix}`;
-  fs.writeFile(path, text, (err) => {
+  fs.writeFile(path, content, (err) => {
     if (err !== null) {
       utools.showNotification(err);
       return;
     } else {
       // success
-      utools.copyFile(path);
-    }
-  });
-}
-
-function DOMElementToFile(DOMElement, suffix) {
-  let buffer = Buffer.from(DOMElement, "utf8"); // to Buffer
-  let path = `${utools.getPath("temp")}\\${getFileName()}.${suffix}`;
-  fs.writeFile(path, buffer, (err) => {
-    if (err !== null) {
-      utools.showNotification(err);
-      return;
-    } else {
-      // success
-      utools.copyFile(path);
+      switch (callBack) {
+        case "copy":
+          utools.copyFile(path);
+          break;
+      }
+      return path;
     }
   });
 }
@@ -240,6 +231,17 @@ window.getFileName = function getFileName() {
   let rtnContent = new Date().format(config["config-filename"].value);
   return rtnContent;
 };
+
+function getPicType() {
+  let config = readConfig();
+  return config["config-pictype"].value;
+}
+
+function DOMParse(string) {
+  let div = document.createElement("div");
+  div.innerHTML = string;
+  return div.firstChild;
+}
 
 function DOMParse(string) {
   let div = document.createElement("div");
