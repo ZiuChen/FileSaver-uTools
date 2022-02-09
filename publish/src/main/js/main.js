@@ -107,6 +107,7 @@ function tableUpdateCallBack(event) {
     $(".autosave-state").html(event.target.checked);
   } else if (event.target.className.indexOf("config-listenmode") !== -1) {
     toggleListenModeState(event.target.checked);
+    console.log(event.target.checked);
     config["config-listenmode"].value = event.target.checked;
     $(".listenmode-state").html(event.target.checked);
   }

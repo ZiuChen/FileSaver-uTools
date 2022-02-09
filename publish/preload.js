@@ -10,7 +10,7 @@ const defaultConfig = {
   },
   "config-silence": {
     id: "config-silence",
-    value: true,
+    value: false,
   },
   "config-pictype": {
     id: "config-pictype",
@@ -67,9 +67,7 @@ function getItem() {
   let config = readConfig();
   if (!clip.readImage().isEmpty()) {
     // image
-    console.log(clip.readHTML()); // ""
-    console.log(DOMParse(clip.readHTML())); // null
-    if(clip.readHTML() === "") {
+    if (clip.readHTML() === "") {
       // not fit to src
       return {
         type: "base64",
@@ -78,8 +76,8 @@ function getItem() {
       };
     } else {
       // have src
-      if(config["config-picencode"].value === "gif") {
-        if(getPicSrc().indexOf("base64") !== -1) {
+      if (config["config-picencode"].value === "gif") {
+        if (getPicSrc().indexOf("base64") !== -1) {
           // src content is base64
           return {
             type: "base64",
@@ -134,36 +132,43 @@ function getItem() {
 
 window.InitListenMode = function () {
   let config = readConfig();
-  toggleListenModeState(config["config-listenmode"].value);
+  if (config["config-listenmode"].value === true) {
+    toggleListenModeState(true);
+  }
   clipboardListener.on("change", () => {
-    // hide plugin but dont exit
-    let item = getItem();
-    // TODO: Decoupling acquisition pictures and saves
-    switch (item.type) {
-      case "base64":
-        let base64Data = item.content.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
-        let ImgBuffer = Buffer.from(base64Data, "base64"); // to Buffer
-        saveFileAsTemp(ImgBuffer, item.origin, "copy");
-        break;
-      case "imgURL":
-        requestFileAsTemp(item.content, item.origin);
-        break;
-      case "plainText":
-        // saveFileAsTemp(item.content, item.origin, "copy")
-        break;
-      case "DOMElement":
-        let DOMBuffer = Buffer.from(item.content, "utf8"); // to Buffer
-        saveFileAsTemp(DOMBuffer, item.origin, "copy");
-        break;
-      case "filePath":
-        // nothing to do
-        break;
-      default:
-        break;
-    }
-    console.log(item);
+    clipboardListenerCallBack();
   });
 };
+
+function clipboardListenerCallBack() {
+  // hide plugin but dont exit
+  console.log("enter call back");
+  let item = getItem();
+  // TODO: Decoupling acquisition pictures and saves
+  switch (item.type) {
+    case "base64":
+      let base64Data = item.content.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
+      let ImgBuffer = Buffer.from(base64Data, "base64"); // to Buffer
+      saveFileAsTemp(ImgBuffer, item.origin, "copy");
+      break;
+    case "imgURL":
+      requestFileAsTemp(item.content, item.origin);
+      break;
+    case "plainText":
+      // saveFileAsTemp(item.content, item.origin, "copy")
+      break;
+    case "DOMElement":
+      let DOMBuffer = Buffer.from(item.content, "utf8"); // to Buffer
+      saveFileAsTemp(DOMBuffer, item.origin, "copy");
+      break;
+    case "filePath":
+      // nothing to do
+      break;
+    default:
+      break;
+  }
+  console.log(item);
+}
 
 function requestFileAsTemp(url, suffix) {
   // TODO: add progress bar
@@ -206,6 +211,10 @@ function saveFileAsTemp(content, suffix, callBack) {
       switch (callBack) {
         case "copy":
           utools.copyFile(path);
+          let config = readConfig();
+          if (config["config-silence"].value === false) {
+            utools.showNotification("已复制到剪切板");
+          }
           break;
       }
       return path;
@@ -217,9 +226,13 @@ window.toggleListenModeState = function (param) {
   if (param) {
     // true
     clipboardListener.startListening();
+    utools.showNotification(
+      "监听模式已开启，请不要退出插件，或按ESC将插件隐藏到后台。"
+    );
   } else {
     // false
     clipboardListener.stopListening();
+    utools.showNotification("监听模式已关闭。");
   }
 };
 
@@ -232,7 +245,7 @@ function getTextSuffix() {
 }
 
 function getPicSuffix(base64) {
-  if(base64 !== undefined) {
+  if (base64 !== undefined) {
     return base64.split("data:image/")[1].split(";base64,")[0];
   } else {
     return getPicBase64().split("data:image/")[1].split(";base64,")[0];
