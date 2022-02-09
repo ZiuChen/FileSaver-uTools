@@ -20,6 +20,7 @@
     <a href="#tab-common" class="mdui-ripple">常规</a>
     <a href="#tab-custom" class="mdui-ripple">自定义</a>
     <a href="#tab-listen" class="mdui-ripple">监听模式</a>
+    <a href="#tab-switch" class="mdui-ripple">功能开关</a>
     <a href="#tab-about" class="mdui-ripple">关于</a>
   </div>
   <div id="tab-common" class="mdui-p-a-2">
@@ -148,6 +149,38 @@
           修改
         </button>
       </div>
+    </div>
+  </div>
+  <div id="tab-switch" class="mdui-p-a-2">
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>收集文件功能</h5>
+      </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '收集文件到自动保存目录', position: 'right'}">
+        <i class="mdui-icon material-icons">info</i>
+      </button>
+    </div>
+    <div class="row operation">
+      <label class="mdui-switch">
+        <input class="config-collectfiles" type="checkbox" />
+        <i class="mdui-switch-icon"></i>
+      </label>
+      <button class="mdui-btn collectfiles-state"></button>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>直接粘贴功能</h5>
+      </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '粘贴文件到当前窗口', position: 'right'}">
+        <i class="mdui-icon material-icons">info</i>
+      </button>
+    </div>
+    <div class="row operation">
+      <label class="mdui-switch">
+        <input class="config-directpaste" type="checkbox" />
+        <i class="mdui-switch-icon"></i>
+      </label>
+      <button class="mdui-btn directpaste-state"></button>
     </div>
   </div>
   <div id="tab-about" class="mdui-p-a-2">

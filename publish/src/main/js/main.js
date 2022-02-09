@@ -9,6 +9,7 @@ utools.onPluginReady(() => {
   initConfig();
   addLisenter();
   InitListenMode();
+  InitFeatures();
 });
 
 function initConfig() {
@@ -28,6 +29,10 @@ function initConfig() {
   $(".config-pictype").val(config["config-pictype"].value);
   $(".config-picencode").val(config["config-picencode"].value);
   $(".config-textencode").val(config["config-textencode"].value);
+  $(".config-directpaste")[0].checked = config["config-directpaste"].value;
+  $(".directpaste-state").html(config["config-directpaste"].value);
+  $(".config-collectfiles")[0].checked = config["config-collectfiles"].value;
+  $(".collectfiles-state").html(config["config-collectfiles"].value);
   selects.forEach((select) => {
     select.handleUpdate();
   });
@@ -105,8 +110,16 @@ function tableUpdateCallBack(event) {
   } else if (event.target.className.indexOf("config-autosave") !== -1) {
     config["config-autosave"].value = event.target.checked;
     $(".autosave-state").html(event.target.checked);
+  } else if (event.target.className.indexOf("config-collectfiles") !== -1) {
+    toggleFeatures("collectfiles", event.target.checked);
+    config["config-collectfiles"].value = event.target.checked;
+    $(".collectfiles-state").html(event.target.checked);
+  } else if (event.target.className.indexOf("config-directpaste") !== -1) {
+    toggleFeatures("directpaste", event.target.checked);
+    config["config-directpaste"].value = event.target.checked;
+    $(".directpaste-state").html(event.target.checked);
   } else if (event.target.className.indexOf("config-listenmode") !== -1) {
-    toggleListenModeState(event.target.checked);
+    toggleListenModeState(event.target.checked, false, true);
     console.log(event.target.checked);
     config["config-listenmode"].value = event.target.checked;
     $(".listenmode-state").html(event.target.checked);

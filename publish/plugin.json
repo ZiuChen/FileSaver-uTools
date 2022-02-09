@@ -2,44 +2,21 @@
   "pluginName": "超级粘贴",
   "description": "将剪切板中的内容保存为文件",
   "author": "Ziu",
-  "main": "http://127.0.0.1:5500/publish/index.html",
+  "main": "index.html",
   "preload": "preload.js",
   "logo": "logo.png",
-  "platform": ["win32", "darwin", "linux"],
+  "platform": ["win32"],
   "version": "1.0.0",
   "features": [
     {
-      "code": "自动保存",
-      "explain": "保存到指定路径",
-      "cmds": [
-        {
-          "type": "img",
-          "label": "保存为图片文件"
-        },
-        {
-          "type": "over",
-          "label": "保存为文件"
-        }
-      ]
-    },
-    {
-      "code": "直接粘贴",
-      "explain": "粘贴文件到当前文件夹",
-      "cmds": [
-        {
-          "type": "window",
-          "label": "直接粘贴",
-          "match": {
-            "app": ["Finder.app", "explorer.exe", "SearchApp.exe"],
-            "class": ["CabinetWClass", "ExploreWClass"]
-          }
-        }
-      ]
+      "code": "监听模式",
+      "explain": "切换监听模式开关",
+      "cmds": ["监听模式"]
     },
     {
       "code": "超级粘贴设置",
       "explain": "修改插件设置",
-      "cmds": ["超级粘贴", "粘贴设置", "设置"]
+      "cmds": ["超级粘贴设置", "设置"]
     }
   ]
 }

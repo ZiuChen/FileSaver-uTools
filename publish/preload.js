@@ -3,6 +3,36 @@ const request = require("request");
 const { clipboard } = require("electron");
 const clip = clipboard;
 const clipboardListener = require("clipboard-event");
+const features = {
+  collectfiles: {
+    code: "收集文件",
+    explain: "保存到指定路径",
+    cmds: [
+      {
+        type: "img",
+        label: "收集文件",
+      },
+      {
+        type: "over",
+        label: "收集文件",
+      },
+    ],
+  },
+  directpaste: {
+    code: "直接粘贴",
+    explain: "粘贴到当前文件夹",
+    cmds: [
+      {
+        type: "window",
+        label: "直接粘贴",
+        match: {
+          app: ["Finder.app", "explorer.exe", "SearchApp.exe"],
+          class: ["CabinetWClass", "ExploreWClass"],
+        },
+      },
+    ],
+  },
+};
 const defaultConfig = {
   "config-filename": {
     id: "config-filename",
@@ -24,6 +54,10 @@ const defaultConfig = {
     id: "config-textencode",
     value: "text", // html: with colorful style
   },
+  "config-listenmode": {
+    id: "config-listenmode",
+    value: true,
+  },
   "config-autosave": {
     id: "config-autosave",
     value: false,
@@ -32,8 +66,12 @@ const defaultConfig = {
     id: "config-path",
     value: utools.getPath("downloads"),
   },
-  "config-listenmode": {
-    id: "config-listenmode",
+  "config-collectfiles": {
+    id: "config-collectfiles",
+    value: true,
+  },
+  "config-directpaste": {
+    id: "config-directpaste",
     value: true,
   },
   "config-matchrule": {
@@ -62,6 +100,30 @@ const defaultConfig = {
     ],
   },
 };
+
+utools.onPluginEnter(({ code, type, payload }) => {
+  // utools.hideMainWindow();
+  console.log(code, type, payload);
+  initDarkMode();
+  if (code === "监听模式") {
+    let config = readConfig();
+    if (config["config-listenmode"].value === true) {
+      toggleListenModeState(false);
+      config["config-listenmode"].value = false;
+    } else {
+      toggleListenModeState(true);
+      config["config-listenmode"].value = true;
+    }
+    updateConfig(config);
+    utools.hideMainWindow();
+  } else if (code === "超级粘贴设置") {
+    // Nothing to do
+  } else if (code === "收集文件") {
+    // TODO: return if clip is empty
+  } else if (code === "直接粘贴") {
+    // TODO: return if clip is empty
+  }
+});
 
 function getItem() {
   let config = readConfig();
@@ -130,10 +192,25 @@ function getItem() {
   }
 }
 
+window.InitFeatures = function () {
+  let config = readConfig();
+  toggleFeatures("collectfiles", config["config-collectfiles"].value);
+  toggleFeatures("directpaste", config["config-directpaste"].value);
+};
+
+window.toggleFeatures = function (feature, param) {
+  if (param) {
+    // true
+    utools.setFeature(features[feature]);
+  } else {
+    utools.removeFeature(features[feature].code);
+  }
+};
+
 window.InitListenMode = function () {
   let config = readConfig();
   if (config["config-listenmode"].value === true) {
-    toggleListenModeState(true);
+    toggleListenModeState(true, true);
   }
   clipboardListener.on("change", () => {
     clipboardListenerCallBack();
@@ -142,7 +219,6 @@ window.InitListenMode = function () {
 
 function clipboardListenerCallBack() {
   // hide plugin but dont exit
-  console.log("enter call back");
   let item = getItem();
   // TODO: Decoupling acquisition pictures and saves
   switch (item.type) {
@@ -222,17 +298,25 @@ function saveFileAsTemp(content, suffix, callBack) {
   });
 }
 
-window.toggleListenModeState = function (param) {
+window.toggleListenModeState = function (param, blockNotice, fromConfig) {
   if (param) {
     // true
     clipboardListener.startListening();
-    utools.showNotification(
-      "监听模式已开启，请不要退出插件，或按ESC将插件隐藏到后台。"
-    );
+    if (!blockNotice) {
+      if (fromConfig) {
+        utools.showNotification(
+          "监听模式已开启，请不要退出插件，或按ESC将插件隐藏到后台。"
+        );
+      } else {
+        utools.showNotification("监听模式已开启，插件已隐藏至后台运行。");
+      }
+    }
   } else {
     // false
     clipboardListener.stopListening();
-    utools.showNotification("监听模式已关闭。");
+    if (!blockNotice) {
+      utools.showNotification("监听模式已关闭。");
+    }
   }
 };
 
@@ -259,15 +343,6 @@ function getPicBase64() {
 function getPicSrc() {
   return DOMParse(clip.readHTML()).src;
 }
-
-utools.onPluginEnter(({ code, type, payload }) => {
-  // utools.hideMainWindow();
-  if (utools.isDarkColors()) {
-    document.body.classList.add("mdui-theme-layout-dark");
-  } else {
-    document.body.classList.remove("mdui-theme-layout-dark");
-  }
-});
 
 window.getFileName = function getFileName() {
   let config = readConfig();
@@ -313,6 +388,14 @@ Date.prototype.format = function (fmt) {
   }
   return fmt;
 };
+
+function initDarkMode() {
+  if (utools.isDarkColors()) {
+    document.body.classList.add("mdui-theme-layout-dark");
+  } else {
+    document.body.classList.remove("mdui-theme-layout-dark");
+  }
+}
 
 window.updateConfig = function updateConfig(config) {
   utools.dbStorage.setItem("config", JSON.stringify(config));
