@@ -29,6 +29,11 @@ button .mdui-icon {
   zoom: 85%;
 }
 
+.tab-icons {
+  zoom: 85%;
+  margin-right: 5px;
+}
+
 .logo {
   margin-left: 60px;
   zoom: 18%;
