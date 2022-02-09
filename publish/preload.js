@@ -68,6 +68,7 @@ function getItem() {
   if (!clip.readImage().isEmpty()) {
     // image
     // TODO: Automatic decide which method used
+    // FIXME: Report error when copy the picture in PPT
     if (config["config-picencode"].value === "base64") {
       return {
         type: "base64",
@@ -122,17 +123,19 @@ window.InitListenMode = function () {
     // TODO: Decoupling acquisition pictures and saves
     switch (item.type) {
       case "base64":
-        saveFileAsTemp(item.content, item.origin, "copy");
+        let base64Data = item.content.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
+        let ImgBuffer = Buffer.from(base64Data, "base64"); // to Buffer
+        saveFileAsTemp(ImgBuffer, item.origin, "copy");
         break;
       case "imgURL":
         requestFileAsTemp(item.content, item.origin);
         break;
       case "plainText":
-        saveFileAsTemp(item.content, item.origin, "copy")
+        // saveFileAsTemp(item.content, item.origin, "copy")
         break;
       case "DOMElement":
-        let buffer = Buffer.from(item.content, "utf8"); // to Buffer
-        saveFileAsTemp(buffer, item.origin, "copy")
+        let DOMBuffer = Buffer.from(item.content, "utf8"); // to Buffer
+        saveFileAsTemp(DOMBuffer, item.origin, "copy");
         break;
       case "filePath":
         // nothing to do
@@ -224,6 +227,11 @@ function getPicSrc() {
 
 utools.onPluginEnter(({ code, type, payload }) => {
   // utools.hideMainWindow();
+  if (utools.isDarkColors()) {
+    document.body.classList.add("mdui-theme-layout-dark");
+  } else {
+    document.body.classList.remove("mdui-theme-layout-dark");
+  }
 });
 
 window.getFileName = function getFileName() {
