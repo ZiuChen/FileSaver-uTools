@@ -18,7 +18,7 @@ const defaultConfig = {
   },
   "config-picencode": {
     id: "config-picencode",
-    value: "base64", // origin: may occur network error but can keep the original size
+    value: "base64", // gif: send request to get gif pic
   },
   "config-textencode": {
     id: "config-textencode",
@@ -67,21 +67,39 @@ function getItem() {
   let config = readConfig();
   if (!clip.readImage().isEmpty()) {
     // image
-    // TODO: Automatic decide which method used
-    // FIXME: Report error when copy the picture in PPT
-    if (config["config-picencode"].value === "base64") {
+    console.log(clip.readHTML()); // ""
+    console.log(DOMParse(clip.readHTML())); // null
+    if(clip.readHTML() === "") {
+      // not fit to src
       return {
         type: "base64",
         origin: getPicSuffix(),
         content: getPicBase64(),
       };
     } else {
-      console.log(getPicSrc());
-      return {
-        type: "imgURL",
-        origin: "none",
-        content: getPicSrc(),
-      };
+      // have src
+      if(config["config-picencode"].value === "gif") {
+        if(getPicSrc().indexOf("base64") !== -1) {
+          // src content is base64
+          return {
+            type: "base64",
+            origin: getPicSuffix(getPicSrc()),
+            content: getPicSrc(),
+          };
+        }
+        return {
+          type: "imgURL",
+          origin: "none",
+          content: getPicSrc(),
+        };
+      } else {
+        // still use base64
+        return {
+          type: "base64",
+          origin: getPicSuffix(),
+          content: getPicBase64(),
+        };
+      }
     }
   } else {
     if (clip.readText() !== "") {
@@ -213,8 +231,12 @@ function getTextSuffix() {
   return "txt";
 }
 
-function getPicSuffix() {
-  return getPicBase64().split("data:image/")[1].split(";base64,")[0];
+function getPicSuffix(base64) {
+  if(base64 !== undefined) {
+    return base64.split("data:image/")[1].split(";base64,")[0];
+  } else {
+    return getPicBase64().split("data:image/")[1].split(";base64,")[0];
+  }
 }
 
 function getPicBase64() {
