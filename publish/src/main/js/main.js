@@ -26,6 +26,8 @@ function initConfig() {
   $(".autosave-state").html(config["config-autosave"].value);
   $(".config-listenmode")[0].checked = config["config-listenmode"].value;
   $(".listenmode-state").html(config["config-listenmode"].value);
+  $(".config-listenimg")[0].checked = config["config-listenimg"].value;
+  $(".config-listentext")[0].checked = config["config-listentext"].value;
   $(".config-pictype").val(config["config-pictype"].value);
   $(".config-picencode").val(config["config-picencode"].value);
   $(".config-textencode").val(config["config-textencode"].value);
@@ -58,6 +60,8 @@ function addLisenter() {
           onClick: function (inst) {
             updateConfig(getDefaultConfig());
             initConfig();
+            // FIXME: if listenmode || collectfiles || directpaste is off before restore,
+            //       have to restart plugin to enable them.
             mdui.alert("设置已恢复初始值。");
           },
         },
@@ -67,8 +71,8 @@ function addLisenter() {
   $(".source-code").on("click", (e) => {
     utools.shellOpenExternal("https://github.com/ZiuChen/FileSaver-uTools");
   });
-  $(".author").on("click", (e) => {
-    utools.shellOpenExternal("https://github.com/ZiuChen");
+  $(".usage-document").on("click", (e) => {
+    utools.shellOpenExternal("https://github.com/ZiuChen/FileSaver-uTools");
   });
   $(".config-path-open-trigger").on("click", (e) => {
     filePathOpenCallBack(e);
@@ -120,9 +124,12 @@ function tableUpdateCallBack(event) {
     $(".directpaste-state").html(event.target.checked);
   } else if (event.target.className.indexOf("config-listenmode") !== -1) {
     toggleListenModeState(event.target.checked, false, true);
-    console.log(event.target.checked);
     config["config-listenmode"].value = event.target.checked;
     $(".listenmode-state").html(event.target.checked);
+  } else if (event.target.className.indexOf("config-listenimg") !== -1) {
+    config["config-listenimg"].value = event.target.checked;
+  } else if (event.target.className.indexOf("config-listentext") !== -1) {
+    config["config-listentext"].value = event.target.checked;
   }
   updateConfig(config);
 }

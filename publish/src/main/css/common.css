@@ -34,6 +34,10 @@ button .mdui-icon {
   margin-right: 5px;
 }
 
+.content-table {
+  width: 350px;
+}
+
 .logo {
   margin-left: 60px;
   zoom: 18%;

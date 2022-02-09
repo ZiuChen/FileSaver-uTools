@@ -17,11 +17,16 @@
     </a>
   </div>
   <div class="mdui-tab" mdui-tab>
-    <a href="#tab-common" class="mdui-ripple"><span><i class="mdui-icon material-icons tab-icons">settings</i>常规</span></a>
-    <a href="#tab-custom" class="mdui-ripple"><span><i class="mdui-icon material-icons tab-icons">palette</i>自定义</span></a>
-    <a href="#tab-listen" class="mdui-ripple"><span><i class="mdui-icon material-icons tab-icons">radio_button_checked</i>监听模式</span></a>
-    <a href="#tab-switch" class="mdui-ripple"><span><i class="mdui-icon material-icons tab-icons">extension</i>更多功能</span></a>
-    <a href="#tab-about" class="mdui-ripple"><span><i class="mdui-icon material-icons tab-icons">explore</i>关于</span></a>
+    <a href="#tab-common" class="mdui-ripple"><span><i
+          class="mdui-icon material-icons tab-icons">settings</i>常规</span></a>
+    <a href="#tab-custom" class="mdui-ripple"><span><i
+          class="mdui-icon material-icons tab-icons">palette</i>自定义</span></a>
+    <a href="#tab-listen" class="mdui-ripple"><span><i
+          class="mdui-icon material-icons tab-icons">radio_button_checked</i>监听模式</span></a>
+    <a href="#tab-switch" class="mdui-ripple"><span><i
+          class="mdui-icon material-icons tab-icons">extension</i>更多功能</span></a>
+    <a href="#tab-about" class="mdui-ripple"><span><i
+          class="mdui-icon material-icons tab-icons">explore</i>关于</span></a>
   </div>
   <div id="tab-common" class="mdui-p-a-2">
     <div class="row">
@@ -29,7 +34,7 @@
         <h5>文件命名</h5>
       </div>
       <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '支持标准日期和时间格式字符串', position: 'right'}">
-        <i class="mdui-icon material-icons">info</i>
+        <i class="mdui-icon material-icons">info_outline</i>
       </button>
     </div>
     <div class="row operation">
@@ -42,8 +47,9 @@
       <div class="mdui-typo-title title">
         <h5>静默模式</h5>
       </div>
-      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '文件保存后不弹出窗口', position: 'right'}">
-        <i class="mdui-icon material-icons">info</i>
+      <button class="mdui-btn mdui-btn-icon"
+        mdui-tooltip="{content: '静默监听模式通知、静默自动保存弹窗、静默文件收集功能弹窗', position: 'right'}">
+        <i class="mdui-icon material-icons">info_outline</i>
       </button>
     </div>
     <div class="row operation">
@@ -57,11 +63,21 @@
   <div id="tab-custom" class="mdui-p-a-2">
     <div class="row">
       <div class="mdui-typo-title title">
+        <h5>匹配拓展名规则</h5>
+      </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '即将到来 ···', position: 'right'}">
+        <i class="mdui-icon material-icons">error</i>
+      </button>
+    </div>
+    <div class="row operation">
+      <div class="mdui-textfield">
+        <textarea class="mdui-textfield-input" placeholder="根据复制内容匹配拓展名，支持正则表达式" disabled></textarea>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
         <h5>图片格式</h5>
       </div>
-      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '图片将转为此格式保存', position: 'right'}">
-        <i class="mdui-icon material-icons">info</i>
-      </button>
     </div>
     <div class="row operation">
       <select class="mdui-select config-pictype">
@@ -74,30 +90,30 @@
     </div>
     <div class="row">
       <div class="mdui-typo-title title">
-        <h5>图片编码方式</h5>
-      </div>
-      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '图片编码保存的方式', position: 'right'}">
-        <i class="mdui-icon material-icons">info</i>
-      </button>
-    </div>
-    <div class="row operation">
-      <select class="mdui-select config-picencode">
-        <option value="gif">GIF</option>
-        <option value="base64">BASE64</option>
-      </select>
-    </div>
-    <div class="row">
-      <div class="mdui-typo-title title">
         <h5>文本编码方式</h5>
       </div>
       <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '文本编码保存的方式', position: 'right'}">
-        <i class="mdui-icon material-icons">info</i>
+        <i class="mdui-icon material-icons">info_outline</i>
       </button>
     </div>
     <div class="row operation">
       <select class="mdui-select config-textencode">
         <option value="text">TEXT</option>
         <option value="html">HTML</option>
+      </select>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
+        <h5>图片保存方式</h5>
+      </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '实验性功能，不建议修改', position: 'right'}">
+        <i class="mdui-icon material-icons">error</i>
+      </button>
+    </div>
+    <div class="row operation">
+      <select class="mdui-select config-picencode">
+        <option value="request">REQUEST</option>
+        <option value="base64">BASE64</option>
       </select>
     </div>
   </div>
@@ -107,7 +123,7 @@
         <h5>监听模式</h5>
       </div>
       <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '将剪切板内容实时转为文件并重新写入剪切板', position: 'right'}">
-        <i class="mdui-icon material-icons">info</i>
+        <i class="mdui-icon material-icons">info_outline</i>
       </button>
     </div>
     <div class="row operation">
@@ -119,10 +135,38 @@
     </div>
     <div class="row">
       <div class="mdui-typo-title title">
+        <h5>监听内容</h5>
+      </div>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '监听文本可能影响正常输入', position: 'right'}">
+        <i class="mdui-icon material-icons">error</i>
+      </button>
+    </div>
+    <div class="row operation">
+      <div class="content-table">
+        <li class="mdui-list-item mdui-ripple">
+          <i class="mdui-list-item-icon mdui-icon material-icons">image</i>
+          <div class="mdui-list-item-content">监听剪切板图片</div>
+          <label class="mdui-switch">
+            <input class="config-listenimg" type="checkbox" />
+            <i class="mdui-switch-icon"></i>
+          </label>
+        </li>
+        <li class="mdui-list-item mdui-ripple">
+          <i class="mdui-list-item-icon mdui-icon material-icons">font_download</i>
+          <div class="mdui-list-item-content">监听剪切板文本</div>
+          <label class="mdui-switch">
+            <input class="config-listentext" type="checkbox" />
+            <i class="mdui-switch-icon"></i>
+          </label>
+        </li>
+      </div>
+    </div>
+    <div class="row">
+      <div class="mdui-typo-title title">
         <h5>自动保存</h5>
       </div>
-      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '执行粘贴操作后自动保存到指定路径', position: 'right'}">
-        <i class="mdui-icon material-icons">info</i>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '自动把复制过的内容保存到指定目录', position: 'right'}">
+        <i class="mdui-icon material-icons">info_outline</i>
       </button>
     </div>
     <div class="row operation">
@@ -134,7 +178,7 @@
     </div>
     <div class="row">
       <div class="mdui-typo-title title">
-        <h5>自动保存路径</h5>
+        <h5>自动保存目录</h5>
       </div>
     </div>
     <div class="row operation">
@@ -156,8 +200,8 @@
       <div class="mdui-typo-title title">
         <h5>收集文件功能</h5>
       </div>
-      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '收集文件到自动保存目录', position: 'right'}">
-        <i class="mdui-icon material-icons">info</i>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '匹配文本并收集到自动保存目录', position: 'right'}">
+        <i class="mdui-icon material-icons">info_outline</i>
       </button>
     </div>
     <div class="row operation">
@@ -171,13 +215,13 @@
       <div class="mdui-typo-title title">
         <h5>直接粘贴功能</h5>
       </div>
-      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '粘贴文件到当前窗口', position: 'right'}">
-        <i class="mdui-icon material-icons">info</i>
+      <button class="mdui-btn mdui-btn-icon" mdui-tooltip="{content: '即将到来 ···', position: 'right'}">
+        <i class="mdui-icon material-icons">error</i>
       </button>
     </div>
     <div class="row operation">
       <label class="mdui-switch">
-        <input class="config-directpaste" type="checkbox" />
+        <input class="config-directpaste" type="checkbox" disabled />
         <i class="mdui-switch-icon"></i>
       </label>
       <button class="mdui-btn directpaste-state"></button>
@@ -191,13 +235,15 @@
     </div>
     <div align="center" class="mdui-typo content">
       <h6>
-        <span> 作者：<a href="javascript:;" class="author">Ziu</a> </span>
-        <span>源代码：<a href="javascript:;" class="source-code">Github</a></span>
+        <span>代码: <a href="javascript:;" class="source-code">Github</a></span>
+        <span>文档:
+          <a href="javascript:;" class="usage-document">Document</a></span>
       </h6>
       <h6>
         使用中遇到任何问题或有任何建议，欢迎在插件评论页或
         <em>Github</em> 留言。
       </h6>
+      <h6>开发不易，欢迎五星好评</h6>
     </div>
   </div>
   <script src="./src/main/js/mdui.min.js"></script>

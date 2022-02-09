@@ -8,14 +8,20 @@ const features = {
     code: "收集文件",
     explain: "保存到指定路径",
     cmds: [
-      {
-        type: "img",
-        label: "收集文件",
-      },
+      // {
+      //   type: "img",
+      //   label: "收集文件",
+      // },
       {
         type: "over",
         label: "收集文件",
       },
+      // {
+      //   type: "files",
+      //   label: "收集文件",
+      //   fileType: "file",
+      //   maxLength: 1
+      // },
     ],
   },
   directpaste: {
@@ -48,7 +54,7 @@ const defaultConfig = {
   },
   "config-picencode": {
     id: "config-picencode",
-    value: "base64", // gif: send request to get gif pic
+    value: "base64", // request: send request
   },
   "config-textencode": {
     id: "config-textencode",
@@ -57,6 +63,14 @@ const defaultConfig = {
   "config-listenmode": {
     id: "config-listenmode",
     value: true,
+  },
+  "config-listenimg": {
+    id: "config-listenimg",
+    value: true,
+  },
+  "config-listentext": {
+    id: "config-listentext",
+    value: false,
   },
   "config-autosave": {
     id: "config-autosave",
@@ -68,50 +82,49 @@ const defaultConfig = {
   },
   "config-collectfiles": {
     id: "config-collectfiles",
-    value: true,
+    value: false,
   },
   "config-directpaste": {
     id: "config-directpaste",
-    value: true,
-  },
-  "config-matchrule": {
-    id: "config-matchrule",
     value: false,
   },
-  "config-rules": {
-    id: "config-rules",
-    value: [
-      {
-        suffix: "cs",
-        rule: "using .*;$",
-      },
-      {
-        suffix: "java",
-        rule: "^package.*;$",
-      },
-      {
-        suffix: "html",
-        rule: "(? i)&lt;!DOCTYPE html",
-      },
-      {
-        suffix: "cpp",
-        rule: "^#include.*",
-      },
-    ],
-  },
+  // "config-matchrule": {
+  //   id: "config-matchrule",
+  //   value: false,
+  // },
+  // "config-rules": {
+  //   id: "config-rules",
+  //   value: [
+  //     {
+  //       suffix: "cs",
+  //       rule: "using .*;$",
+  //     },
+  //     {
+  //       suffix: "java",
+  //       rule: "^package.*;$",
+  //     },
+  //     {
+  //       suffix: "html",
+  //       rule: "(? i)&lt;!DOCTYPE html",
+  //     },
+  //     {
+  //       suffix: "cpp",
+  //       rule: "^#include.*",
+  //     },
+  //   ],
+  // },
 };
 
 utools.onPluginEnter(({ code, type, payload }) => {
-  // utools.hideMainWindow();
   console.log(code, type, payload);
   initDarkMode();
   if (code === "监听模式") {
     let config = readConfig();
     if (config["config-listenmode"].value === true) {
-      toggleListenModeState(false);
+      toggleListenModeState(false, false, false);
       config["config-listenmode"].value = false;
     } else {
-      toggleListenModeState(true);
+      toggleListenModeState(true, false, false);
       config["config-listenmode"].value = true;
     }
     updateConfig(config);
@@ -119,9 +132,34 @@ utools.onPluginEnter(({ code, type, payload }) => {
   } else if (code === "超级粘贴设置") {
     // Nothing to do
   } else if (code === "收集文件") {
-    // TODO: return if clip is empty
+    let config = readConfig();
+    // as long as not file object, not listen mode
+    if (type === "over") {
+      let content = payload;
+      if (config["config-textencode"].value === "html") {
+        let DOMBuffer = Buffer.from(clip.readHTML(), "utf8"); // to Buffer
+        content = DOMBuffer;
+      }
+      let path = `${
+        config["config-path"].value
+      }\\${getFileName()}.${getTextSuffix()}`;
+      fs.writeFile(path, content, (err) => {
+        if (err !== null) {
+          utools.showNotification(err);
+          return;
+        } else {
+          // success
+          if (config["config-silence"].value === true) {
+            return;
+          } else {
+            utools.shellShowItemInFolder(path);
+          }
+          return path;
+        }
+      });
+    }
   } else if (code === "直接粘贴") {
-    // TODO: return if clip is empty
+    // comming soon
   }
 });
 
@@ -138,7 +176,7 @@ function getItem() {
       };
     } else {
       // have src
-      if (config["config-picencode"].value === "gif") {
+      if (config["config-picencode"].value === "request") {
         if (getPicSrc().indexOf("base64") !== -1) {
           // src content is base64
           return {
@@ -174,7 +212,7 @@ function getItem() {
       } else {
         return {
           type: "DOMElement",
-          origin: getHTMLSuffix(),
+          origin: getTextSuffix(),
           content: clip.readHTML(),
         };
       }
@@ -220,20 +258,30 @@ window.InitListenMode = function () {
 function clipboardListenerCallBack() {
   // hide plugin but dont exit
   let item = getItem();
-  // TODO: Decoupling acquisition pictures and saves
+  item2Object(item);
+}
+
+function item2Object(item) {
+  let config = readConfig();
+  let img = config["config-listenimg"].value;
+  let text = config["config-listentext"].value;
   switch (item.type) {
     case "base64":
+      if (!img) return;
       let base64Data = item.content.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
       let ImgBuffer = Buffer.from(base64Data, "base64"); // to Buffer
       saveFileAsTemp(ImgBuffer, item.origin, "copy");
       break;
     case "imgURL":
+      if (!img) return;
       requestFileAsTemp(item.content, item.origin);
       break;
     case "plainText":
-      // saveFileAsTemp(item.content, item.origin, "copy")
+      if (!text) return;
+      saveFileAsTemp(item.content, item.origin, "copy");
       break;
     case "DOMElement":
+      if (!text) return;
       let DOMBuffer = Buffer.from(item.content, "utf8"); // to Buffer
       saveFileAsTemp(DOMBuffer, item.origin, "copy");
       break;
@@ -243,7 +291,6 @@ function clipboardListenerCallBack() {
     default:
       break;
   }
-  console.log(item);
 }
 
 function requestFileAsTemp(url, suffix) {
@@ -261,6 +308,13 @@ function requestFileAsTemp(url, suffix) {
       req.pipe(fs.createWriteStream(path));
       req.on("close", (err) => {
         utools.copyFile(path);
+        let config = readConfig();
+        if (config["config-autosave"].value === true) {
+          copyFile(
+            path,
+            `${config["config-path"].value}\\${getFileName()}.${suffix}`
+          );
+        }
         if (err) {
           utools.showNotification(err);
           return;
@@ -278,6 +332,8 @@ function saveFileAsTemp(content, suffix, callBack) {
     suffix = getPicType();
   }
   let path = `${utools.getPath("temp")}\\${getFileName()}.${suffix}`;
+  // TODO: integrate all files into one folder
+  // TODO: onPluginEnter clear Temp folder
   fs.writeFile(path, content, (err) => {
     if (err !== null) {
       utools.showNotification(err);
@@ -293,7 +349,28 @@ function saveFileAsTemp(content, suffix, callBack) {
           }
           break;
       }
+      let config = readConfig();
+      if (config["config-autosave"].value === true) {
+        copyFile(
+          path,
+          `${config["config-path"].value}\\${getFileName()}.${suffix}`
+        );
+      }
       return path;
+    }
+  });
+}
+
+function copyFile(src, target) {
+  let config = readConfig();
+  fs.copyFile(src, target, (err) => {
+    if (err) {
+      utools.showNotification(err);
+    }
+    if (config["config-silence"].value === true) {
+      return;
+    } else {
+      utools.shellShowItemInFolder(target);
     }
   });
 }
@@ -320,12 +397,13 @@ window.toggleListenModeState = function (param, blockNotice, fromConfig) {
   }
 };
 
-function getHTMLSuffix() {
-  return "html";
-}
-
 function getTextSuffix() {
-  return "txt";
+  let config = readConfig();
+  if (config["config-textencode"].value === "html") {
+    return "html";
+  } else {
+    return "txt";
+  }
 }
 
 function getPicSuffix(base64) {
