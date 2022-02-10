@@ -129,6 +129,9 @@ function tableUpdateCallBack(event) {
   } else if (event.target.className.indexOf("config-listenimg") !== -1) {
     config["config-listenimg"].value = event.target.checked;
   } else if (event.target.className.indexOf("config-listentext") !== -1) {
+    if(event.target.checked) {
+      mdui.alert("监听剪切板文本可能影响正常输入，建议使用后及时关闭。", "警告")
+    }
     config["config-listentext"].value = event.target.checked;
   }
   updateConfig(config);
