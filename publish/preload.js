@@ -8,20 +8,20 @@ const features = {
     code: "收集文件",
     explain: "保存到指定路径",
     cmds: [
-      // {
-      //   type: "img",
-      //   label: "收集文件",
-      // },
+      {
+        type: "img",
+        label: "收集文件",
+      },
       {
         type: "over",
         label: "收集文件",
       },
-      // {
-      //   type: "files",
-      //   label: "收集文件",
-      //   fileType: "file",
-      //   maxLength: 1
-      // },
+      {
+        type: "files",
+        label: "收集文件",
+        fileType: "file",
+        minLength: 1,
+      },
     ],
   },
   directpaste: {
@@ -156,6 +156,33 @@ utools.onPluginEnter(({ code, type, payload }) => {
           }
           return path;
         }
+      });
+    } else if (type === "img") {
+      let base64Data = payload.replace(/^data:image\/\w+;base64,/, ""); // remove the prefix
+      let buffer = Buffer.from(base64Data, "base64"); // to Buffer
+      let suffix =
+        getPicType() !== "origin" ? getPicType() : getPicSuffix(payload);
+      let path = `${config["config-path"].value}\\${getFileName()}.${suffix}`;
+      fs.writeFile(path, buffer, (err) => {
+        if (err !== null) {
+          utools.showNotification(err);
+          return;
+        } else {
+          // success
+          if (config["config-silence"].value === true) {
+            return;
+          } else {
+            utools.shellShowItemInFolder(path);
+          }
+        }
+      });
+    } else if (type === "files") {
+      payload.forEach((item) => {
+        let suffix = item.name.split(".").pop();
+        copyFile(
+          item.path,
+          `${config["config-path"].value}\\${getFileName()}.${suffix}`
+        );
       });
     }
   } else if (code === "直接粘贴") {
