@@ -20,6 +20,7 @@ function initConfig() {
   $(".config-filename-preview").html(
     new Date("2022-01-01").format(config["config-filename"].value)
   );
+  $(".config-rules").val(JSON.stringify(config["config-rules"].value));
   $(".config-silence")[0].checked = config["config-silence"].value;
   $(".silence-state").html(config["config-silence"].value);
   $(".config-autosave")[0].checked = config["config-autosave"].value;
@@ -102,6 +103,8 @@ function tableUpdateCallBack(event) {
   } else if (event.target.className.indexOf("config-filename") !== -1) {
     if (checkIllegalCharacter(event.target.value) !== -1) return;
     config["config-filename"].value = event.target.value;
+  } else if (event.target.className.indexOf("config-rules") !== -1) {
+    config["config-rules"].value = JSON.parse(event.target.value);
   } else if (event.target.className.indexOf("config-pictype") !== -1) {
     config["config-pictype"].value = event.target.value;
   } else if (event.target.className.indexOf("config-picencode") !== -1) {
@@ -129,8 +132,11 @@ function tableUpdateCallBack(event) {
   } else if (event.target.className.indexOf("config-listenimg") !== -1) {
     config["config-listenimg"].value = event.target.checked;
   } else if (event.target.className.indexOf("config-listentext") !== -1) {
-    if(event.target.checked) {
-      mdui.alert("监听剪切板文本可能影响正常输入，建议使用后及时关闭。", "警告")
+    if (event.target.checked) {
+      mdui.alert(
+        "监听剪切板文本可能影响正常输入，建议使用后及时关闭。",
+        "警告"
+      );
     }
     config["config-listentext"].value = event.target.checked;
   }

@@ -100,10 +100,6 @@ const defaultConfig = {
         rule: "^package.*;$",
       },
       {
-        suffix: "html",
-        rule: "(? i)&lt;!DOCTYPE html",
-      },
-      {
         suffix: "cpp",
         rule: "^#include.*",
       },
@@ -138,7 +134,7 @@ utools.onPluginEnter(({ code, type, payload }) => {
       }
       let path = `${
         config["config-path"].value
-      }\\${getFileName()}.${getTextSuffix()}`;
+      }\\${getFileName()}.${getTextSuffix(payload)}`;
       fs.writeFile(path, content, (err) => {
         if (err !== null) {
           utools.showNotification(err);
@@ -229,13 +225,13 @@ function getItem() {
       if (config["config-textencode"].value === "text") {
         return {
           type: "plainText",
-          origin: getTextSuffix(),
+          origin: getTextSuffix(clip.readText()),
           content: clip.readText(),
         };
       } else {
         return {
           type: "DOMElement",
-          origin: getTextSuffix(),
+          origin: getTextSuffix(clip.readHTML()),
           content: clip.readHTML(),
         };
       }
@@ -281,6 +277,7 @@ window.InitListenMode = function () {
 function clipboardListenerCallBack() {
   // hide plugin but dont exit
   let item = getItem();
+  console.log(item);
   item2Object(item);
 }
 
@@ -420,13 +417,27 @@ window.toggleListenModeState = function (param, blockNotice, fromConfig) {
   }
 };
 
-function getTextSuffix() {
+function getTextSuffix(text) {
   let config = readConfig();
   if (config["config-textencode"].value === "html") {
     return "html";
   } else {
-    return "txt";
+    let suffix = matchRules(text);
+    if (suffix !== "") return suffix;
+    else return "txt";
   }
+}
+
+function matchRules(text) {
+  let config = readConfig();
+  let rules = config["config-rules"].value;
+  let rtnSuffix = ""
+  rules.forEach(item => {
+    if(text.search(item.rule) !== -1) {
+      rtnSuffix = item.suffix
+    }
+  })
+  return rtnSuffix
 }
 
 function getPicSuffix(base64) {
