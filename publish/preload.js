@@ -88,31 +88,27 @@ const defaultConfig = {
     id: "config-directpaste",
     value: false,
   },
-  // "config-matchrule": {
-  //   id: "config-matchrule",
-  //   value: false,
-  // },
-  // "config-rules": {
-  //   id: "config-rules",
-  //   value: [
-  //     {
-  //       suffix: "cs",
-  //       rule: "using .*;$",
-  //     },
-  //     {
-  //       suffix: "java",
-  //       rule: "^package.*;$",
-  //     },
-  //     {
-  //       suffix: "html",
-  //       rule: "(? i)&lt;!DOCTYPE html",
-  //     },
-  //     {
-  //       suffix: "cpp",
-  //       rule: "^#include.*",
-  //     },
-  //   ],
-  // },
+  "config-rules": {
+    id: "config-rules",
+    value: [
+      {
+        suffix: "cs",
+        rule: "using .*;$",
+      },
+      {
+        suffix: "java",
+        rule: "^package.*;$",
+      },
+      {
+        suffix: "html",
+        rule: "(? i)&lt;!DOCTYPE html",
+      },
+      {
+        suffix: "cpp",
+        rule: "^#include.*",
+      },
+    ],
+  },
 };
 
 utools.onPluginEnter(({ code, type, payload }) => {
