@@ -1,5 +1,5 @@
 body {
-  font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Microsoft Yahei, sans-serif;
 }
 
 .row {
@@ -49,7 +49,8 @@ button .mdui-icon {
   zoom: 85%;
 }
 
-.title, .content {
+.title,
+.content {
   cursor: default;
 }
 

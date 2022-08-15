@@ -5,8 +5,8 @@
   "main": "index.html",
   "preload": "preload.js",
   "logo": "logo.png",
-  "platform": ["win32"],
-  "version": "1.0.0",
+  "platform": ["win32", "darwin", "linux"],
+  "version": "1.0.2",
   "features": [
     {
       "code": "监听模式",
