@@ -82,7 +82,7 @@ const defaultConfig = {
   },
   'config-collectfiles': {
     id: 'config-collectfiles',
-    value: false
+    value: true
   },
   'config-directpaste': {
     id: 'config-directpaste',
