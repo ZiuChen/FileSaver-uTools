@@ -6,7 +6,7 @@
   "preload": "preload.js",
   "logo": "logo.png",
   "platform": ["win32", "darwin", "linux"],
-  "version": "1.0.4",
+  "version": "1.0.5",
   "features": [
     {
       "code": "监听模式",
