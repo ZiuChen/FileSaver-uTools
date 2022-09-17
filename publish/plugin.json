@@ -17,6 +17,26 @@
       "code": "超级粘贴设置",
       "explain": "修改插件设置",
       "cmds": ["超级粘贴设置", "设置"]
+    },
+    {
+      "code": "收集文件",
+      "explain": "保存到指定路径",
+      "cmds": [
+        {
+          "type": "img",
+          "label": "收集文件"
+        },
+        {
+          "type": "over",
+          "label": "收集文件"
+        },
+        {
+          "type": "files",
+          "label": "收集文件",
+          "fileType": "file",
+          "minLength": 1
+        }
+      ]
     }
   ]
 }

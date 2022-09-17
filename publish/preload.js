@@ -62,7 +62,7 @@ const defaultConfig = {
   },
   'config-listenmode': {
     id: 'config-listenmode',
-    value: true
+    value: false
   },
   'config-listenimg': {
     id: 'config-listenimg',
